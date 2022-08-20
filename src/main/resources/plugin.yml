@@ -1,0 +1,70 @@
+name: VnllaPlayerInfo
+version: '${project.version}'
+author: Chris Gillin
+main: com.gmail.drygaming2.vnllaplayerinfo.VnllaPlayerInfo
+api-version: 1.19
+
+
+commands:
+  stats:
+    description: Displays player stats to player
+    usage: "Usage: /stats"
+  status:
+    description: Displays info about a player in chat to the executor.
+    usage: "Usage: /status [player]"
+    permission: VnllaPlayerInfo.seestatus
+  statusip:
+    description: Displays accounts associated with a given ip.
+    usage: "Usage: /statusip [ip]"
+    permission: VnllaPlayerInfo.seestatusip
+  lastlocation:
+    description: Teleports to players last known location.
+    usage: "Usage: /lastlocation [uuid]"
+    permission: VnllaPlayerInfo.seestatus
+  givevote:
+    description: Gives the player a vote.
+    usage: "Usage: /givevote [uuid]"
+    permission: VnllaPlayerInfo.givevote
+  donor:
+    description: Grants donor to a player
+    usage: "Usage: /donor [player]"
+    permission: VnllaPlayerInfo.givedonor
+  forge:
+    description: Adds colored title and lore to an item.
+    usage: "Usage: /forge \"<name>\" \"<lore>\""
+    permission: VnllaPlayerInfo.seestatus
+  forgegiven:
+    description: Subtracts 1 from forgeitem for player.
+    usage: "Usage: /forgegiven [player]"
+    permission: VnllaPlayerInfo.seestatus
+  group:
+    description: Changes a player's group.
+    usage: "Usage: /group [player] [group]"
+    permission: VnllaPlayerInfo.group
+  wipeip:
+    description: Wipes all ips from a user in the alt database
+    usage: "Usage: /wipeip [player]"
+    permission: VnllaPlayerInfo.wipeip
+
+permissions:
+  VnllaPlayerInfo.wipeip:
+    description: Allows user to wipe a players stored ip from the alt detector database
+    default: op
+  VnllaPlayerInfo.seestatus:
+    description: Allows user to use /status. This will display IPs, UUID, and ban/alt information if the player is banned.
+    default: op
+  VnllaPlayerInfo.seestatusip:
+    description: Allows user to use /statusip. This will return all users associated with the specified IP address.
+    default: false
+  VnllaPlayerInfo.seestatusalt:
+    description: Allows user to see know alts in /status, regardless of whether the user is banned.
+    default: false
+  VnllaPlayerInfo.givevote:
+    description: Allows to give a vote to a player.
+    default: op
+  VnllaPlayerInfo.givedonor:
+    description: Allows to give donor to a player.
+    default: op
+  VnllaPlayerInfo.group:
+    description: Change player group.
+    default: false
