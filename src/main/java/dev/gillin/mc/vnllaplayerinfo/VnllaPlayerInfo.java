@@ -113,9 +113,9 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
                         ip = event.getPlayer().spigot().getRawAddress().toString();
                         ip = ip.substring(ip.indexOf('/') + 1, ip.indexOf(':'));
                     } catch (StringIndexOutOfBoundsException e) {
-                        ip = "Error #1, less fuck";
+                        ip = "Error #1";
                     } catch (Exception ex) {
-                        ip = "Error #2 fuck";
+                        ip = "Error #2";
                     }
 
                     //save player data for joining player
@@ -267,15 +267,6 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
         return false;
     }
 
-/*    public String getPlayerGroup(OfflinePlayer p) {
-
-		for(String s:getConfig().getStringList("groupperms")) {
-			if(p.getPlayer().hasPermission(s))
-				return s.substring(s.indexOf('.')+1);
-		}
-        return "idk";
-    }
-*/
 
     //returns file from playerdata folder in plugin folder
     public File getPlayerFile(String uuid) {

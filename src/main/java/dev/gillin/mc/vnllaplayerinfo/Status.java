@@ -20,8 +20,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 */
 public class Status implements CommandExecutor{
 	private final VnllaPlayerInfo plugin;
-	public Status(VnllaPlayerInfo in) {
-		this.plugin = in;
+	public Status(VnllaPlayerInfo plugin) {
+		this.plugin = plugin;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
@@ -31,7 +31,7 @@ public class Status implements CommandExecutor{
 		            @Override
 		            public void run() {
 		            	/*
-		            	 * devs r dick for "deprecating" this. It is the fastest method to get this done. 
+		            	 * While this is "deprecated" It is the fastest method to get this done.
 		            	 * It's only deprecated because they want you to use uuids as the parameter
 		            	 * Since that would make no sense for this use case, this still makes most sense.
 		            	*/
@@ -39,7 +39,7 @@ public class Status implements CommandExecutor{
 						OfflinePlayer p=Bukkit.getOfflinePlayer(args[0]);
 						String uuid=p.getUniqueId().toString();
 						ArrayList<String> ips=plugin.getDB().getIPsByUUID(uuid);
-						ArrayList<String> alts=new ArrayList<String>();
+						ArrayList<String> alts=new ArrayList<>();
 						
 						FileConfiguration config=plugin.getPlayerConfig(uuid);
 						
@@ -83,7 +83,7 @@ public class Status implements CommandExecutor{
 								expire=null;
 							if(expire!=null)
 								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Rank Expires: "+ChatColor.WHITE+ expire);
-								sender.sendMessage(ChatColor.LIGHT_PURPLE+"su_points: "+ChatColor.WHITE+su_points);
+							sender.sendMessage(ChatColor.LIGHT_PURPLE+"su_points: "+ChatColor.WHITE+su_points);
 							sender.sendMessage(ChatColor.LIGHT_PURPLE+"Times Suspected: "+ChatColor.WHITE+timesSuspected);
 							if(config.isSet("votes.forgeitem"))
 								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Forge items owed: "+ChatColor.WHITE+config.getInt("votes.forgeitem"));
@@ -130,7 +130,7 @@ public class Status implements CommandExecutor{
 								
 						}
 						else {
-							sender.sendMessage(ChatColor.RED+"This player has never logged on... or somethin is broke");
+							sender.sendMessage(ChatColor.RED+"This player has never logged on... or something is broken");
 						}
 						if(p.isBanned()) {
 							BanEntry ban=plugin.getServer().getBanList(BanList.Type.NAME).getBanEntry(p.getName());

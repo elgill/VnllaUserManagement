@@ -1,7 +1,7 @@
 name: VnllaPlayerInfo
 version: '${project.version}'
 author: Chris Gillin
-main: com.gmail.drygaming2.vnllaplayerinfo.VnllaPlayerInfo
+main: dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo
 api-version: 1.19
 
 
