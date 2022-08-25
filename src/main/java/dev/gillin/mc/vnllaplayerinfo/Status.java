@@ -9,15 +9,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
-/*
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-*/
+
 public class Status implements CommandExecutor{
 	private final VnllaPlayerInfo plugin;
 	public Status(VnllaPlayerInfo plugin) {
@@ -44,8 +42,14 @@ public class Status implements CommandExecutor{
 						FileConfiguration config=plugin.getPlayerConfig(uuid);
 						
 						Scoreboard main=Bukkit.getScoreboardManager().getMainScoreboard();
-						int su_points=main.getObjective("su_points").getScore(p.getName()).getScore();
-						int timesSuspected=main.getObjective("timesSuspected").getScore(p.getName()).getScore();
+						int su_points=0;
+						int timesSuspected=0;
+						Objective suPoints=main.getObjective("su_points");
+						Objective timeSuspected=main.getObjective("timesSuspected");
+						if(suPoints != null)
+							su_points = suPoints.getScore(p.getName()).getScore();
+						if(timeSuspected != null)
+							timesSuspected = timeSuspected.getScore(p.getName()).getScore();
 						
 						// only populated alts list if it will be needed
 						if(p.isBanned() || sender.hasPermission("VnllaPlayerInfo.seestatusalt")) {
@@ -100,17 +104,17 @@ public class Status implements CommandExecutor{
 							//if player has been on before, add the total time recorded
 							if(config.isSet("playtime.totalAllTime")) 
 								time+=config.getLong("playtime.totalAllTime");
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"Total Playtime: "+ChatColor.WHITE+plugin.makeTimeReadable(time, true));
+							sender.sendMessage(ChatColor.LIGHT_PURPLE+"Total Playtime: "+ChatColor.WHITE+CommonUtilities.makeTimeReadable(time, true));
 							
 		
 							if(config.isSet("playtime.lastLogin")) 
-								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Login: "+ChatColor.WHITE+plugin.makeTimeReadable(System.currentTimeMillis()-config.getLong("playtime.lastLogin"), false)+" ago");
+								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Login: "+ChatColor.WHITE+CommonUtilities.makeTimeReadable(System.currentTimeMillis()-config.getLong("playtime.lastLogin"), false)+" ago");
 							
 							
 							if(p.isOnline()) 
 								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Online: "+ChatColor.WHITE+"Now");
 							else if(config.isSet("playtime.lastLogout")) {
-								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Online: "+ChatColor.WHITE+plugin.makeTimeReadable(System.currentTimeMillis()-config.getLong("playtime.lastLogout"), false)+" ago");
+								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Online: "+ChatColor.WHITE+CommonUtilities.makeTimeReadable(System.currentTimeMillis()-config.getLong("playtime.lastLogout"), false)+" ago");
 							}
 							//long code to make it execute /lastlocation [uuid] when the yellow here is pressed
 							
@@ -154,7 +158,7 @@ public class Status implements CommandExecutor{
 			            @Override
 						public void run() {
 							sender.sendMessage(ChatColor.LIGHT_PURPLE+"IP: "+ChatColor.WHITE+args[0]);
-							ArrayList<String> ign=new ArrayList<String>();
+							ArrayList<String> ign=new ArrayList<>();
 							for(String s:plugin.getDB().getUUIDssByIP(args[0])) {
 								ign.add(Bukkit.getOfflinePlayer(UUID.fromString(s)).getName());
 							}
@@ -170,38 +174,6 @@ public class Status implements CommandExecutor{
 					}.runTaskAsynchronously(plugin);
 					return true;
 				}	
-		}
-		
-		else if(command.getName().equalsIgnoreCase("stats")) {
-			if(args.length==0) {
-				
-				if(sender instanceof Player) {
-		            	new BukkitRunnable() {
-				            @Override
-							public void run() {
-				            	Player p=(Player) sender;
-								Scoreboard main=plugin.getServer().getScoreboardManager().getMainScoreboard();
-								FileConfiguration config=plugin.getPlayerConfig(p.getUniqueId().toString());
-			            		
-								long time=0;
-								time+=System.currentTimeMillis()-config.getLong("playtime.lastLogin");
-								//if player has been on before, add the total time recorded
-								if(config.isSet("playtime.totalAllTime")) 
-									time+=config.getLong("playtime.totalAllTime");
-			            		
-								sender.sendMessage(ChatColor.YELLOW+p.getName()+"'s Stats:");
-			            		sender.sendMessage(ChatColor.YELLOW+"Total Votes: "+ChatColor.GREEN+config.getInt("votes.totalVotes"));
-			            		sender.sendMessage(ChatColor.YELLOW+"Playtime: "+ChatColor.GREEN+plugin.makeTimeReadable(time, true));
-			            		sender.sendMessage(ChatColor.YELLOW+"Kills: "+ChatColor.GREEN+p.getStatistic(Statistic.PLAYER_KILLS));
-			            		sender.sendMessage(ChatColor.YELLOW+"Deaths: "+ChatColor.GREEN+p.getStatistic(Statistic.DEATHS));
-			            		sender.sendMessage(ChatColor.YELLOW+"Survival Points: "+ChatColor.GREEN+main.getObjective("su_points").getScore(p.getName()).getScore());
-				            }
-						}.runTaskAsynchronously(plugin);
-            	}
-            	else
-            		sender.sendMessage(ChatColor.RED+"Ur not a player!");
-				return true;
-			}	
 		}
 		
 		

@@ -31,7 +31,7 @@ commands:
     permission: VnllaPlayerInfo.givedonor
   forge:
     description: Adds colored title and lore to an item.
-    usage: "Usage: /forge \"<name>\" \"<lore>\""
+    usage: "Usage: /forge <color> \"<name>\" \"<lore>\""
     permission: VnllaPlayerInfo.seestatus
   forgegiven:
     description: Subtracts 1 from forgeitem for player.

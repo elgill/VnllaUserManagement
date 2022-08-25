@@ -2,6 +2,7 @@ package dev.gillin.mc.vnllaplayerinfo;
 
 import dev.gillin.mc.vnllaplayerinfo.Database.Database;
 import dev.gillin.mc.vnllaplayerinfo.Database.SQLite;
+import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.BanList.Type;
@@ -19,6 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,10 +37,11 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
-        getCommand("stats").setExecutor(new Status(this));
+
+        getCommand("stats").setExecutor(new StatsExecutor(this));
         getCommand("status").setExecutor(new Status(this));
         getCommand("statusip").setExecutor(new Status(this));
-        getCommand("lastlocation").setExecutor(this);
+        getCommand("lastlocation").setExecutor(new StatsExecutor(this));
         getCommand("donor").setExecutor(this);
         getCommand("wipeip").setExecutor(this);
 
@@ -53,7 +56,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
         //initialize data folder
         this.saveDefaultConfig();
         File playerDataFile = new File(this.getDataFolder() + File.separator + "playerdata");
-        if (!playerDataFile.exists() && playerDataFile.mkdir())
+        if (!playerDataFile.exists() && !playerDataFile.mkdir())
             getLogger().log(Level.SEVERE,"Failed to create PlayerData Directory");
 
 
@@ -195,28 +198,8 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
     }
 
     @SuppressWarnings("deprecation")
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-
-        // lastlocation <uuid>
-        if (command.getName().equalsIgnoreCase("lastlocation") && args.length == 1) {
-            //gets uuid, unless its invalid
-            try {
-                UUID.fromString(args[0]);
-            } catch (IllegalArgumentException e) {
-                plugin.getLogger().log(Level.SEVERE, "Invalid UUID entered by player");
-                return false;
-            }
-            //get location and tp player to it
-            FileConfiguration config = plugin.getPlayerConfig(args[0]);
-            if (!config.isSet("lastlocation")) {
-                sender.sendMessage(ChatColor.GREEN + "This is the player's first session so they don't have one :)");
-                return true;
-            }
-            Location loc = new Location(Bukkit.getWorld(config.getString("lastlocation.world")), config.getDouble("lastlocation.x"), config.getDouble("lastlocation.y"), config.getDouble("lastlocation.z"));
-            getServer().getPlayer(sender.getName()).teleport(loc);
-
-            return true;
-        } else if (command.getName().equalsIgnoreCase("givevote") && args.length == 1) {
+    public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String commandLabel, String[] args) {
+        if (command.getName().equalsIgnoreCase("givevote") && args.length == 1) {
             OfflinePlayer p;
             try {
                 p = getServer().getOfflinePlayer(UUID.fromString(args[0]));
@@ -473,27 +456,6 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
                 plugin.getLogger().log(Level.INFO, "Saved time information in " + uuid + ".yml");
             }
 
-        }
-    }
-
-    //takes time in millisecond and converts it into a readable string
-    public String makeTimeReadable(long time, boolean stopAtHours) {
-        long t = time / 1000;
-        //seconds
-        if (t < 60) {
-            return t + " second(s)";
-        }
-        //minutes
-        else if (t < 3600) {
-            return (t / 60) + " minute(s)";
-        }
-        //hours
-        else if (t < 216000 || stopAtHours) {
-            return (t / 3600) + " hour(s)";
-        }
-        //days
-        else {
-            return (t / (3600 * 24)) + " day(s)";
         }
     }
 
