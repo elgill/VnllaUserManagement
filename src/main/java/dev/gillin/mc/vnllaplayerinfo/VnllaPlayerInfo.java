@@ -2,7 +2,11 @@ package dev.gillin.mc.vnllaplayerinfo;
 
 import dev.gillin.mc.vnllaplayerinfo.Database.Database;
 import dev.gillin.mc.vnllaplayerinfo.Database.SQLite;
+import dev.gillin.mc.vnllaplayerinfo.commands.LastLocationExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
+import dev.gillin.mc.vnllaplayerinfo.commands.StatusExecutor;
+import dev.gillin.mc.vnllaplayerinfo.commands.StatusIPExecutor;
+import dev.gillin.mc.vnllaplayerinfo.events.VnllaPlayerJoinEvent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.BanList.Type;
@@ -36,12 +40,13 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getServer().getPluginManager().registerEvents(this, this);
+        this.getServer().getPluginManager().registerEvents(this, this);
+       // this.getServer().getPluginManager().registerEvent(PlayerJoinEvent,new VnllaPlayerJoinEvent(),plugin);
 
         getCommand("stats").setExecutor(new StatsExecutor(this));
-        getCommand("status").setExecutor(new Status(this));
-        getCommand("statusip").setExecutor(new Status(this));
-        getCommand("lastlocation").setExecutor(new StatsExecutor(this));
+        getCommand("status").setExecutor(new StatusExecutor(this));
+        getCommand("statusip").setExecutor(new StatusIPExecutor(this));
+        getCommand("lastlocation").setExecutor(new LastLocationExecutor(this));
         getCommand("donor").setExecutor(this);
         getCommand("wipeip").setExecutor(this);
 
