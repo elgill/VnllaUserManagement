@@ -17,3 +17,18 @@ votes:
    vip1: 25
    vip2: 60
    keeprank: 2592000
+
+#List lowest to highest vote unlockable ranks
+voteranks:
+   vip:
+      displayname: "VIP"
+      votes: 25
+      ranklength: 2592000
+      earncmd: ""
+      losecmd: ""
+   vip2:
+      displayname: "VIP2"
+      votes: 60
+      ranklength: 2592000
+      earncmd: ""
+      losecmd: ""
