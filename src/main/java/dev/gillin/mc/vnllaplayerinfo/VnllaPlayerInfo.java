@@ -6,7 +6,6 @@ import dev.gillin.mc.vnllaplayerinfo.commands.LastLocationExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusIPExecutor;
-import dev.gillin.mc.vnllaplayerinfo.events.VnllaPlayerJoinEvent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.BanList.Type;
@@ -32,16 +31,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class VnllaPlayerInfo extends JavaPlugin implements Listener {
+    public static final String FORGE = "forge";
+    public static final String GROUP = "group";
     private final VnllaPlayerInfo plugin = this;
     private Database db;
+
+    final Logger logger = plugin.getLogger();
 
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(this, this);
-       // this.getServer().getPluginManager().registerEvent(PlayerJoinEvent,new VnllaPlayerJoinEvent(),plugin);
 
         getCommand("stats").setExecutor(new StatsExecutor(this));
         getCommand("status").setExecutor(new StatusExecutor(this));
@@ -51,18 +54,18 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
         getCommand("wipeip").setExecutor(this);
 
         TabExecutor forge = new Forge(this);
-        getCommand("forge").setExecutor(forge);
-        getCommand("forge").setTabCompleter(forge);
+        getCommand(FORGE).setExecutor(forge);
+        getCommand(FORGE).setTabCompleter(forge);
 
         TabExecutor groups = new Groups(this);
-        getCommand("group").setExecutor(groups);
-        getCommand("group").setTabCompleter(groups);
+        getCommand(GROUP).setExecutor(groups);
+        getCommand(GROUP).setTabCompleter(groups);
 
         //initialize data folder
         this.saveDefaultConfig();
         File playerDataFile = new File(this.getDataFolder() + File.separator + "playerdata");
         if (!playerDataFile.exists() && !playerDataFile.mkdir())
-            getLogger().log(Level.SEVERE,"Failed to create PlayerData Directory");
+            logger.log(Level.SEVERE,"Failed to create PlayerData Directory");
 
 
         //load db
@@ -128,8 +131,8 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
 
                     //save player data for joining player
                     FileConfiguration config = plugin.getPlayerConfig(uuid);
-                    if (!config.isSet("group")) {
-                        config.set("group", "default");
+                    if (!config.isSet(GROUP)) {
+                        config.set(GROUP, "default");
                     }
 
 
@@ -203,16 +206,18 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
     }
 
     @SuppressWarnings("deprecation")
+    @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String commandLabel, String[] args) {
         if (command.getName().equalsIgnoreCase("givevote") && args.length == 1) {
             OfflinePlayer p;
-            try {
+            String playerInput = args[0];
+            if(CommonUtilities.isValidUUID(playerInput)){
                 p = getServer().getOfflinePlayer(UUID.fromString(args[0]));
-            } catch (IllegalArgumentException e) {
+            } else {
                 p = getServer().getOfflinePlayer(args[0]);
             }
 
-            plugin.getLogger().log(Level.INFO, "Vote given to " + p.getName());
+            logger.log(Level.INFO, "Vote given to {}", p.getName());
             FileConfiguration config = plugin.getPlayerConfig(p.getUniqueId().toString());
             if (p.isOnline())
                 giveVote((Player) p, config, 1);
@@ -236,7 +241,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
             getServer().dispatchCommand(getServer().getConsoleSender(), "lp user " + p.getName() + " parent addtemp vip2 " + vip2 / 1000 + " replace");
             config.set("votes.vip2expire", vip2);
             if (!isStaff(config))
-                config.set("group", "vip2");
+                config.set(GROUP, "vip2");
             config.set("votes.forgeitem", config.getInt("votes.forgeitem") + 1);
             this.savePlayerConfig(config, p.getUniqueId().toString());
             return true;
@@ -262,12 +267,12 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
         if (!f.exists()) {
             try {
                 if(f.createNewFile())
-                    plugin.getLogger().log(Level.INFO, "File created: " + uuid + ".yml");
+                    logger.log(Level.INFO, "File created: {}.yml", uuid);
                 else
-                    plugin.getLogger().log(Level.SEVERE,"Failed to create file: " + uuid + ".yml");
+                    logger.log(Level.SEVERE,"Failed to create file: {}.yml", uuid);
 
             } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, "Me failed to make the new player file, me sorry :(", e);
+                logger.log(Level.SEVERE, "Me failed to make the new player file, me sorry :(", e);
             }
         }
         return f;
@@ -278,8 +283,8 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
         if (!config.isSet("uuid")) {
             config.set("uuid", uuid);
         }
-        if (!config.isSet("group")) {
-            config.set("group", "default");
+        if (!config.isSet(GROUP)) {
+            config.set(GROUP, "default");
         }
         return config;
     }
@@ -289,7 +294,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
         try {
             config.save(new File(plugin.getDataFolder() + File.separator + "playerdata" + File.separator + uuid + ".yml"));
         } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Me failed to write changes to the player file, me sorry :(", e);
+            logger.log(Level.SEVERE, "Me failed to write changes to the player file, me sorry :(", e);
         }
         return true;
     }
@@ -386,7 +391,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
     }
 
     public boolean isStaff(FileConfiguration config) {
-        String group = config.getString("group");
+        String group = config.getString(GROUP);
         return group != null && (group.equals("mod") || group.equals("admin") || group.equals("owner"));
     }
 
@@ -437,7 +442,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
                     config.set("lastlocation.z", loc.getZ());
                     config.set("lastlocation.world", loc.getWorld().getName());
                     if (plugin.savePlayerConfig(config, uuid)) {
-                        plugin.getLogger().log(Level.INFO, "Saved player status information in " + uuid + ".yml");
+                        logger.log(Level.INFO, "Saved player status information in {}.yml", uuid);
                     }
 
                 }
@@ -458,7 +463,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
             config.set("lastlocation.z", loc.getZ());
             config.set("lastlocation.world", loc.getWorld().getName());
             if (plugin.savePlayerConfig(config, uuid)) {
-                plugin.getLogger().log(Level.INFO, "Saved time information in " + uuid + ".yml");
+                logger.log(Level.INFO, "Saved time information in {}.yml", uuid);
             }
 
         }

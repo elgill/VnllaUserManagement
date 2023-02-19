@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,19 +25,17 @@ public class Groups implements TabExecutor{
 	
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         List<String> completions = new ArrayList<>();
-        List<String> list = new ArrayList<>();
+        List<String> possibiles = new ArrayList<>();
         if (args.length == 1) {	
-        	for(Player a:plugin.getServer().getOnlinePlayers()) {
-        		list.add(a.getName());
+        	for(Player player : plugin.getServer().getOnlinePlayers()) {
+        		possibiles.add(player.getName());
         	}
-            StringUtil.copyPartialMatches(args[0], list, completions);
-        } 
-
-        if (args.length == 2) {	
-        	for(String a:groups) {
-        		list.add(a);
+            StringUtil.copyPartialMatches(args[0], possibiles, completions);
+        } else if (args.length == 2) {
+        	for(String group:groups) {
+				possibiles = Arrays.asList(group);
         	}
-            StringUtil.copyPartialMatches(args[1], list, completions);
+            StringUtil.copyPartialMatches(args[1], possibiles, completions);
         } 
 
         

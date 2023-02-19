@@ -1,6 +1,10 @@
 package dev.gillin.mc.vnllaplayerinfo;
 
 public class CommonUtilities {
+    private CommonUtilities() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      *
      * @param uuid - UUID to validate
@@ -16,10 +20,7 @@ public class CommonUtilities {
         int dash3 = uuid.indexOf('-', dash2 + 1);
         int dash4 = uuid.indexOf('-', dash3 + 1);
         int dash5 = uuid.indexOf('-', dash4 + 1);
-        if (dash4 < 0 || dash5 >= 0) {
-            return false;
-        }
-        return true;
+        return !(dash4 < 0 || dash5 >= 0);
     }
 
     /**
