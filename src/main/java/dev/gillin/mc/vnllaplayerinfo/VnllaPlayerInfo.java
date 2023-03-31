@@ -34,7 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class VnllaPlayerInfo extends JavaPlugin implements Listener {
+public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlayerInfo {
     public static final String FORGE = "forge";
     public static final String GROUP = "group";
     private final VnllaPlayerInfo plugin = this;
@@ -63,10 +63,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
         getCommand(GROUP).setTabCompleter(groups);
 
         //initialize data folder
-        this.saveDefaultConfig();
-        File playerDataFile = new File(this.getDataFolder() + File.separator + "playerdata");
-        if (!playerDataFile.exists() && !playerDataFile.mkdir())
-            logger.log(Level.SEVERE,"Failed to create PlayerData Directory");
+        createPlayerDataDirectory();
 
 
         //load db
@@ -395,5 +392,13 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener {
     //actually completely useless
     public Database getDB() {
         return this.db;
+    }
+
+    @Override
+    public void createPlayerDataDirectory() {
+        this.saveDefaultConfig();
+        File playerDataFile = new File(this.getDataFolder() + File.separator + "playerdata");
+        if (!playerDataFile.exists() && !playerDataFile.mkdir())
+            getLogger().log(Level.SEVERE,"Failed to create PlayerData Directory");
     }
 }
