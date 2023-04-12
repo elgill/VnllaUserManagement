@@ -1,5 +1,6 @@
 package dev.gillin.mc.vnllaplayerinfo;
 
+import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -16,10 +17,12 @@ import java.util.List;
 
 public class Groups implements TabExecutor{
 	private final VnllaPlayerInfo plugin;
+	private GroupModel groupModels;
 	static final String[] groups= {"default","vip","vip2","mod","admin","owner"};
-	
+
 	public Groups(VnllaPlayerInfo p) {
 		plugin=p;
+		//groupModels = p.getConfig()
 	}
 	
 	

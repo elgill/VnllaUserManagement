@@ -4,18 +4,18 @@ public class GroupModel {
     private String displayName;
     private int votesRequired;
     private long rankLength;
-    private String earnRankCommand;
-    private String loseRankCommand;
+    private String[] earnRankCommands;
+    private String[] loseRankCommands;
 
     public GroupModel() {
     }
 
-    public GroupModel(String displayName, int votesRequired, long rankLength, String earnRankCommand, String loseRankCommand) {
+    public GroupModel(String displayName, int votesRequired, long rankLength, String[] earnRankCommands, String[] loseRankCommands) {
         this.displayName = displayName;
         this.votesRequired = votesRequired;
         this.rankLength = rankLength;
-        this.earnRankCommand = earnRankCommand;
-        this.loseRankCommand = loseRankCommand;
+        this.earnRankCommands = earnRankCommands;
+        this.loseRankCommands = loseRankCommands;
     }
 
     public String getDisplayName() {
@@ -42,20 +42,19 @@ public class GroupModel {
         this.rankLength = rankLength;
     }
 
-    public String getEarnRankCommand() {
-        return earnRankCommand;
+    public String[] getEarnRankCommands() {
+        return earnRankCommands;
     }
 
-    public void setEarnRankCommand(String earnRankCommand) {
-        this.earnRankCommand = earnRankCommand;
+    public void setEarnRankCommands(String[] earnRankCommands) {
+        this.earnRankCommands = earnRankCommands;
     }
 
-    public String getLoseRankCommand() {
-        return loseRankCommand;
+    public String[] getLoseRankCommands() {
+        return loseRankCommands;
     }
 
-    public void setLoseRankCommand(String loseRankCommand) {
-        this.loseRankCommand = loseRankCommand;
+    public void setLoseRankCommands(String[] loseRankCommands) {
+        this.loseRankCommands = loseRankCommands;
     }
-
 }

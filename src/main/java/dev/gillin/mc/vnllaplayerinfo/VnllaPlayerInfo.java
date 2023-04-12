@@ -6,6 +6,7 @@ import dev.gillin.mc.vnllaplayerinfo.commands.LastLocationExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusIPExecutor;
+import dev.gillin.mc.vnllaplayerinfo.handlers.VoteHandler;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.BanList.Type;
@@ -20,7 +21,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +39,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
     public static final String GROUP = "group";
     private final VnllaPlayerInfo plugin = this;
     private VoteHandler voteHandler;
+    private Groups groups;
     private Database db;
 
     final Logger logger = plugin.getLogger();
@@ -71,6 +72,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         this.db.load();
 
         voteHandler = new VoteHandler();
+        groups = new Groups(this);
 
         //set all players as logged in
         for (Player p : getServer().getOnlinePlayers()) {
@@ -267,9 +269,9 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         if (!f.exists()) {
             try {
                 if(f.createNewFile())
-                    logger.log(Level.INFO, "File created: {}.yml", uuid);
+                    logger.log(Level.INFO, "File created: {0}.yml", uuid);
                 else
-                    logger.log(Level.SEVERE,"Failed to create file: {}.yml", uuid);
+                    logger.log(Level.SEVERE,"Failed to create file: {0}.yml", uuid);
 
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Me failed to make the new player file, me sorry :(", e);
@@ -362,7 +364,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                     config.set("lastlocation.z", loc.getZ());
                     config.set("lastlocation.world", loc.getWorld().getName());
                     if (plugin.savePlayerConfig(config, uuid)) {
-                        logger.log(Level.INFO, "Saved player status information in {}.yml", uuid);
+                        logger.log(Level.INFO, "Saved player status information in {0}.yml", uuid);
                     }
 
                 }
@@ -383,7 +385,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             config.set("lastlocation.z", loc.getZ());
             config.set("lastlocation.world", loc.getWorld().getName());
             if (plugin.savePlayerConfig(config, uuid)) {
-                logger.log(Level.INFO, "Saved time information in {}.yml", uuid);
+                logger.log(Level.INFO, "Saved time information in {0}.yml", uuid);
             }
 
         }

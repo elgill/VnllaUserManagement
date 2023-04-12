@@ -1,5 +1,7 @@
-package dev.gillin.mc.vnllaplayerinfo;
+package dev.gillin.mc.vnllaplayerinfo.handlers;
 
+import dev.gillin.mc.vnllaplayerinfo.Groups;
+import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -10,19 +12,19 @@ import org.bukkit.inventory.ItemStack;
 import static org.bukkit.Bukkit.getServer;
 
 public class VoteHandler {
-    public void giveVote(VnllaPlayerInfo plugin, Player p, FileConfiguration config, int num) {
+    public void giveVote(VnllaPlayerInfo plugin, Player p, FileConfiguration config, int numVotes) {
         String rank = config.getString("votes.rank");
-        if (num <= 0)
+        if (numVotes <= 0)
             return;
         if (!config.isSet("votes.rank")) {
             rank = "default";
         }
 
-        p.giveExpLevels(num * plugin.getConfig().getInt("votes.xplevels"));
-        p.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, num * plugin.getConfig().getInt("votes.beef")));
-        int total = config.getInt("votes.totalVotes") + num;
-        int vip1 = config.getInt("votes.vip1Votes") + num;
-        int vip2 = config.getInt("votes.vip2Votes") + num;
+        p.giveExpLevels(numVotes * plugin.getConfig().getInt("votes.xplevels"));
+        p.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, numVotes * plugin.getConfig().getInt("votes.beef")));
+        int total = config.getInt("votes.totalVotes") + numVotes;
+        int vip1 = config.getInt("votes.vip1Votes") + numVotes;
+        int vip2 = config.getInt("votes.vip2Votes") + numVotes;
         long keeprank = 1000 * plugin.getConfig().getLong("votes.keeprank");
         long vip1expire = config.getLong("votes.vip1expire");
         long vip2expire = config.getLong("votes.vip2expire");
