@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupSerializer {
-
     public static List<GroupModel> deserializeGroups(ConfigurationSection groupsSection) {
         List<GroupModel> groups = new ArrayList<>();
 
@@ -16,8 +15,10 @@ public class GroupSerializer {
             long rankLength = groupsSection.getLong(key + ".rankLength");
             List<String> earnRankCommands = groupsSection.getStringList(key + ".earnRankCommands");
             List<String> loseRankCommands = groupsSection.getStringList(key + ".loseRankCommands");
+            List<String> permissions = groupsSection.getStringList(key + ".permissions");
+            boolean voteAchievable = groupsSection.getBoolean(key + ".voteAchievable", true); // Default to true
 
-            GroupModel group = new GroupModel(displayName, votesRequired, rankLength, earnRankCommands.toArray(new String[0]), loseRankCommands.toArray(new String[0]));
+            GroupModel group = new GroupModel(displayName, votesRequired, rankLength, earnRankCommands, loseRankCommands, voteAchievable, permissions);
             groups.add(group);
         }
 

@@ -1,21 +1,24 @@
 package dev.gillin.mc.vnllaplayerinfo.groups;
 
+import java.util.List;
+
 public class GroupModel {
     private String displayName;
     private int votesRequired;
     private long rankLength;
-    private String[] earnRankCommands;
-    private String[] loseRankCommands;
+    private List<String> earnRankCommands;
+    private List<String> loseRankCommands;
+    private boolean voteAchievable;
+    private List<String> permissions;
 
-    public GroupModel() {
-    }
-
-    public GroupModel(String displayName, int votesRequired, long rankLength, String[] earnRankCommands, String[] loseRankCommands) {
+    public GroupModel(String displayName, int votesRequired, long rankLength, List<String> earnRankCommands, List<String> loseRankCommands, boolean voteAchievable, List<String> permissions) {
         this.displayName = displayName;
         this.votesRequired = votesRequired;
         this.rankLength = rankLength;
         this.earnRankCommands = earnRankCommands;
         this.loseRankCommands = loseRankCommands;
+        this.voteAchievable = voteAchievable;
+        this.permissions = permissions;
     }
 
     public String getDisplayName() {
@@ -42,19 +45,35 @@ public class GroupModel {
         this.rankLength = rankLength;
     }
 
-    public String[] getEarnRankCommands() {
+    public List<String> getEarnRankCommands() {
         return earnRankCommands;
     }
 
-    public void setEarnRankCommands(String[] earnRankCommands) {
+    public void setEarnRankCommands(List<String> earnRankCommands) {
         this.earnRankCommands = earnRankCommands;
     }
 
-    public String[] getLoseRankCommands() {
+    public List<String> getLoseRankCommands() {
         return loseRankCommands;
     }
 
-    public void setLoseRankCommands(String[] loseRankCommands) {
+    public void setLoseRankCommands(List<String> loseRankCommands) {
         this.loseRankCommands = loseRankCommands;
+    }
+
+    public boolean isVoteAchievable() {
+        return voteAchievable;
+    }
+
+    public void setVoteAchievable(boolean voteAchievable) {
+        this.voteAchievable = voteAchievable;
+    }
+
+    public List<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setGrantedPermissions(List<String> permissions) {
+        this.permissions = permissions;
     }
 }

@@ -20,15 +20,27 @@ votes:
 
 #List lowest to highest vote unlockable ranks
 voteranks:
-   vip:
+   vip1:
       displayname: "VIP"
       votes: 25
       ranklength: 2592000
-      earncmd: ""
-      losecmd: ""
+      earnRankCommands:
+         - lp user %PLAYER% parent removetemp vip
+         - lp user %PLAYER% parent addtemp vip %EXPIRE% replace
+      loseRankCommands:
+         - lp user %PLAYER% parent removetemp vip
+      permissions:
+         - some.permission.vip1
+      voteAchievable: true
    vip2:
       displayname: "VIP2"
       votes: 60
       ranklength: 2592000
-      earncmd: ""
-      losecmd: ""
+      earnRankCommands:
+         - lp user %PLAYER% parent removetemp vip2
+         - lp user %PLAYER% parent addtemp vip2 %EXPIRE% replace
+      loseRankCommands:
+         - lp user %PLAYER% parent removetemp vip2
+      permissions:
+         - some.permission.vip2
+      voteAchievable: true

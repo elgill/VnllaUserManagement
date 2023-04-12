@@ -219,7 +219,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                 p = getServer().getOfflinePlayer(args[0]);
             }
 
-            logger.log(Level.INFO, "Vote given to {}", p.getName());
+            logger.log(Level.INFO, "Vote given to {0}", p.getName());
             FileConfiguration config = plugin.getPlayerConfig(p.getUniqueId().toString());
             if (p.isOnline())
                 giveVote((Player) p, config, 1);
