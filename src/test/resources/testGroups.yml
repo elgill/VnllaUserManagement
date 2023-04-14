@@ -10,6 +10,15 @@ groups:
     permissions:
       - some.permission.vip
     voteAchievable: true
+  vip2:
+    displayName: "vip2"
+    votesRequired: 0
+    rankLength: 2592000
+    earnRankCommands: []
+    loseRankCommands: []
+    permissions:
+      - some.permission.vip2
+    voteAchievable: true
   donor:
     displayName: "Donor"
     votesRequired: 0

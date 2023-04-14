@@ -7,6 +7,7 @@ import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusIPExecutor;
 import dev.gillin.mc.vnllaplayerinfo.handlers.VoteHandler;
+import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.BanList.Type;
@@ -76,9 +77,9 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
 
         //set all players as logged in
         for (Player p : getServer().getOnlinePlayers()) {
-            FileConfiguration config = plugin.getPlayerConfig(p.getUniqueId().toString());
-            config.set("playtime.lastLogin", System.currentTimeMillis());
-            plugin.savePlayerConfig(config, p.getUniqueId().toString());
+            PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin, p.getUniqueId().toString());
+            playerConfigModel.setLastLogin(System.currentTimeMillis());
+            playerConfigModel.saveConfig(plugin);
         }
     }
 
@@ -96,14 +97,14 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         try {
             //all off of main thread
             String uuid = event.getPlayer().getUniqueId().toString();
-            FileConfiguration config = plugin.getPlayerConfig(uuid);
-            if (config.isSet("votes.owed") && config.getInt("votes.owed") > 0) {
+            PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin, uuid);
+            //FileConfiguration config = plugin.getPlayerConfig(uuid);
+            if (playerConfigModel.getVotesOwed() > 0) {
                 //TODO: new thread
-                plugin.giveVote(event.getPlayer(), plugin.getPlayerConfig(uuid), config.getInt("votes.owed"));
-                config = plugin.getPlayerConfig(uuid);
-                config.set("votes.owed", 0);
+                plugin.giveVote(event.getPlayer(), playerConfigModel, playerConfigModel.getVotesOwed());
+                playerConfigModel.setVotesOwed(0);
 
-                plugin.savePlayerConfig(config, uuid);
+                playerConfigModel.saveConfig(plugin);
             }
             try {
                 plugin.updateRank(event.getPlayer(), plugin.getPlayerConfig(uuid));
@@ -171,10 +172,18 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                             for (OfflinePlayer p : banned) {
                                 String playerName=p.getName();
                                 String reason="";
-                                if(playerName != null)
-                                    reason= getServer().getBanList(Type.NAME).getBanEntry(playerName).getReason();
-                                ClickEvent banPlay = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/ban " + name + " Alt of banned player: " + p.getName() + ". Banned for " + reason);
+                                if(playerName != null){
+                                     BanEntry banEntry = getServer().getBanList(Type.NAME).getBanEntry(playerName);
+                                     if(banEntry != null){
+                                        reason = banEntry.getReason();
+                                     }
+                                     else{
+                                         logger.log(Level.SEVERE, "No Ban entry found for Player: {0}", playerName);
+                                     }
+                                }
 
+                                ClickEvent banPlay = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+                                        String.format("/ban %s Alt of banned player: %s. Banned for %s", name, p.getName(), reason));
                                 String[] strings = {p.getName(), " was banned for: ", reason};
                                 net.md_5.bungee.api.ChatColor[] colors = {net.md_5.bungee.api.ChatColor.DARK_RED, net.md_5.bungee.api.ChatColor.RED, net.md_5.bungee.api.ChatColor.YELLOW};
 
@@ -220,12 +229,12 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             }
 
             logger.log(Level.INFO, "Vote given to {0}", p.getName());
-            FileConfiguration config = plugin.getPlayerConfig(p.getUniqueId().toString());
+            PlayerConfigModel playerConfigModel= PlayerConfigModel.fromUUID(plugin,p.getUniqueId().toString());
             if (p.isOnline())
-                giveVote((Player) p, config, 1);
+                giveVote((Player) p, playerConfigModel, 1);
             else {
-                config.set("votes.owed", config.getInt("votes.owed") + 1);
-                this.savePlayerConfig(config, p.getUniqueId().toString());
+                playerConfigModel.setVotesOwed(playerConfigModel.getVotesOwed()+1);
+                playerConfigModel.saveConfig(plugin);
             }
 
             return true;
@@ -280,6 +289,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         return f;
     }
 
+
     public FileConfiguration getPlayerConfig(String uuid) {
         FileConfiguration config = YamlConfiguration.loadConfiguration(getPlayerFile(uuid));
         if (!config.isSet("uuid")) {
@@ -308,8 +318,8 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         }
     }
 
-    public void giveVote(Player p, FileConfiguration config, int num) {
-        voteHandler.giveVote(plugin,p,config,num);
+    public void giveVote(Player p, PlayerConfigModel playerConfigModel, int num) {
+        voteHandler.giveVote(plugin,p,playerConfigModel,num);
     }
 
     public boolean isStaff(FileConfiguration config) {
@@ -350,44 +360,40 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    FileConfiguration config = plugin.getPlayerConfig(uuid);
+                    PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
                     long current = System.currentTimeMillis();
-                    long lastLogin = config.getLong("playtime.lastLogin");
+                    long lastLogin = playerConfigModel.getLastLogin();
 
-                    config.set("playtime.lastLogout", current);
+                    playerConfigModel.setLastLogout(current);
                     long add = (current - lastLogin);
                     if (add < (1000 * 60 * 60 * 12))
-                        config.set("playtime.totalAllTime", config.getLong("playtime.totalAllTime") + add);
+                        playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime()+add);
 
-                    config.set("lastlocation.x", loc.getX());
-                    config.set("lastlocation.y", loc.getY());
-                    config.set("lastlocation.z", loc.getZ());
-                    config.set("lastlocation.world", loc.getWorld().getName());
-                    if (plugin.savePlayerConfig(config, uuid)) {
-                        logger.log(Level.INFO, "Saved player status information in {0}.yml", uuid);
-                    }
+                    playerConfigModel.setLastLocationX(loc.getX());
+                    playerConfigModel.setLastLocationY(loc.getY());
+                    playerConfigModel.setLastLocationZ(loc.getZ());
+                    playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
+
+                    playerConfigModel.saveConfig(plugin);
 
                 }
             }.runTaskAsynchronously(plugin);
         } else {
-
-            FileConfiguration config = plugin.getPlayerConfig(uuid);
+            PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
             long current = System.currentTimeMillis();
-            long lastLogin = config.getLong("playtime.lastLogin");
+            long lastLogin = playerConfigModel.getLastLogin();
 
-            config.set("playtime.lastLogout", current);
+            playerConfigModel.setLastLogout(current);
             long add = (current - lastLogin);
             if (add < (1000 * 60 * 60 * 12))
-                config.set("playtime.totalAllTime", config.getLong("playtime.totalAllTime") + add);
+                playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime()+add);
 
-            config.set("lastlocation.x", loc.getX());
-            config.set("lastlocation.y", loc.getY());
-            config.set("lastlocation.z", loc.getZ());
-            config.set("lastlocation.world", loc.getWorld().getName());
-            if (plugin.savePlayerConfig(config, uuid)) {
-                logger.log(Level.INFO, "Saved time information in {0}.yml", uuid);
-            }
+            playerConfigModel.setLastLocationX(loc.getX());
+            playerConfigModel.setLastLocationY(loc.getY());
+            playerConfigModel.setLastLocationZ(loc.getZ());
+            playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
 
+            playerConfigModel.saveConfig(plugin);
         }
     }
 

@@ -18,8 +18,8 @@ votes:
    vip2: 60
    keeprank: 2592000
 
-#List lowest to highest vote unlockable ranks
-voteranks:
+#List lowest to highest ranks
+groups:
    vip1:
       displayname: "VIP"
       votes: 25
@@ -44,3 +44,48 @@ voteranks:
       permissions:
          - some.permission.vip2
       voteAchievable: true
+   donor:
+      displayname: "Donor"
+      votes: 0
+      ranklength: 2592000
+      earnRankCommands:
+         - lp user %PLAYER% parent removetemp donor
+         - lp user %PLAYER% parent addtemp donor %EXPIRE% replace
+      loseRankCommands:
+         - lp user %PLAYER% parent removetemp donor
+      permissions:
+         - some.permission.donor
+      voteAchievable: false
+   mod:
+      displayname: "Moderator"
+      votes: 0
+      ranklength: 0
+      earnRankCommands:
+         - lp user %PLAYER% parent removetemp mod
+         - lp user %PLAYER% parent addtemp mod %EXPIRE% replace
+      loseRankCommands:
+         - lp user %PLAYER% parent removetemp mod
+      permissions:
+         - some.permission.mod
+      voteAchievable: false
+   admin:
+      displayname: "Admin"
+      votes: 0
+      ranklength: 0
+      earnRankCommands:
+         - lp user %PLAYER% parent removetemp mod
+         - lp user %PLAYER% parent addtemp mod %EXPIRE% replace
+      loseRankCommands:
+         - lp user %PLAYER% parent removetemp mod
+      permissions:
+         - some.permission.mod
+      voteAchievable: false
+   owner:
+      displayname: "Owner"
+      votes: 0
+      ranklength: 0
+      earnRankCommands: []
+      loseRankCommands: []
+      permissions:
+         - some.permission.owner
+      voteAchievable: false

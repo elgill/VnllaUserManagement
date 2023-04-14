@@ -22,9 +22,10 @@ class GroupSerializerTest {
         FileConfiguration config = YamlConfiguration.loadConfiguration(new InputStreamReader(yamlInputStream, StandardCharsets.UTF_8));
         List<GroupModel> groups = GroupSerializer.deserializeGroups(config.getConfigurationSection("groups"));
 
-        assertEquals(2, groups.size());
+        assertEquals(3, groups.size());
 
         GroupModel vip1 = groups.stream().filter(g -> g.getDisplayName().equals("VIP")).findFirst().orElse(null);
+        GroupModel vip2 = groups.stream().filter(g -> g.getDisplayName().equals("vip2")).findFirst().orElse(null);
         GroupModel donor = groups.stream().filter(g -> g.getDisplayName().equals("Donor")).findFirst().orElse(null);
 
         assertNotNull(vip1);
@@ -37,6 +38,17 @@ class GroupSerializerTest {
         List<String> vips1Permissions = vip1.getPermissions();
         assertTrue(vips1Permissions.contains("some.permission.vip"));
         assertTrue(vip1.isVoteAchievable());
+
+        assertNotNull(vip2);
+        assertEquals(0, vip2.getVotesRequired());
+        assertEquals(vip2.getRankLength(),2592000);
+        List<String> vip2EarnRankCmds = vip2.getEarnRankCommands();
+        assertTrue(vip2EarnRankCmds.isEmpty());
+        List<String> vip2LoseRankCmds = vip2.getLoseRankCommands();
+        assertTrue(vip2LoseRankCmds.isEmpty());
+        List<String> vip2Permissions = vip2.getPermissions();
+        assertTrue(vip2Permissions.contains("some.permission.vip2"));
+        assertTrue(vip2.isVoteAchievable());
 
         assertNotNull(donor);
         assertEquals(0, donor.getVotesRequired());

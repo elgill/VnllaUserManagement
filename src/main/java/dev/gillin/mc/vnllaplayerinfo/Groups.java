@@ -23,7 +23,7 @@ public class Groups implements TabExecutor{
 
 	public Groups(VnllaPlayerInfo p) {
 		plugin=p;
-		groupModels = GroupSerializer.deserializeGroups(p.getConfig().getConfigurationSection("voteranks"));
+		groupModels = GroupSerializer.deserializeGroups(p.getConfig().getConfigurationSection("groups"));
 	}
 	
 	
