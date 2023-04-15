@@ -22,7 +22,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,6 +46,14 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
     private Database db;
 
     final Logger logger = plugin.getLogger();
+
+    public VnllaPlayerInfo() {
+    }
+
+    protected VnllaPlayerInfo(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
+    {
+        super(loader, description, dataFolder, file);
+    }
 
     @Override
     public void onEnable() {
@@ -360,41 +370,30 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
-                    long current = System.currentTimeMillis();
-                    long lastLogin = playerConfigModel.getLastLogin();
-
-                    playerConfigModel.setLastLogout(current);
-                    long add = (current - lastLogin);
-                    if (add < (1000 * 60 * 60 * 12))
-                        playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime()+add);
-
-                    playerConfigModel.setLastLocationX(loc.getX());
-                    playerConfigModel.setLastLocationY(loc.getY());
-                    playerConfigModel.setLastLocationZ(loc.getZ());
-                    playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
-
-                    playerConfigModel.saveConfig(plugin);
-
+                    updatePlayerConfigModel(uuid, loc);
                 }
             }.runTaskAsynchronously(plugin);
         } else {
-            PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
-            long current = System.currentTimeMillis();
-            long lastLogin = playerConfigModel.getLastLogin();
-
-            playerConfigModel.setLastLogout(current);
-            long add = (current - lastLogin);
-            if (add < (1000 * 60 * 60 * 12))
-                playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime()+add);
-
-            playerConfigModel.setLastLocationX(loc.getX());
-            playerConfigModel.setLastLocationY(loc.getY());
-            playerConfigModel.setLastLocationZ(loc.getZ());
-            playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
-
-            playerConfigModel.saveConfig(plugin);
+            updatePlayerConfigModel(uuid, loc);
         }
+    }
+
+    private void updatePlayerConfigModel(String uuid, Location loc) {
+        PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
+        long current = System.currentTimeMillis();
+        long lastLogin = playerConfigModel.getLastLogin();
+
+        playerConfigModel.setLastLogout(current);
+        long add = (current - lastLogin);
+        if (add < (1000 * 60 * 60 * 12))
+            playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime() + add);
+
+        playerConfigModel.setLastLocationX(loc.getX());
+        playerConfigModel.setLastLocationY(loc.getY());
+        playerConfigModel.setLastLocationZ(loc.getZ());
+        playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
+
+        playerConfigModel.saveConfig(plugin);
     }
 
     //actually completely useless

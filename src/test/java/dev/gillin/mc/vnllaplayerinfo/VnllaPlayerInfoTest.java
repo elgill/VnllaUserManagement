@@ -1,40 +1,56 @@
 package dev.gillin.mc.vnllaplayerinfo;
 
-import dev.gillin.mc.vnllaplayerinfo.Database.Database;
-
-import java.io.File;
-import java.util.logging.Logger;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-
-import org.bukkit.configuration.file.FileConfiguration;
+import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.ServerMock;
+import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.when;
+import java.util.UUID;
 
-class VnllaPlayerInfoTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    private IVnllaPlayerInfo vnllaPlayerInfo;
+public class VnllaPlayerInfoTest {
+    private VnllaPlayerInfo vnllaPlayerInfo;
+    private ServerMock server;
 
     @BeforeEach
     public void setUp() {
-        vnllaPlayerInfo = Mockito.mock(VnllaPlayerInfo.class);
-        when(vnllaPlayerInfo.getLogger()).thenReturn(Logger.getLogger("TestLogger"));
+        server = MockBukkit.mock();
+        vnllaPlayerInfo = MockBukkit.load(VnllaPlayerInfo.class);
+    }
+    @AfterEach
+    public void tearDown() {
+        MockBukkit.unmock();
     }
 
+    @Test
+    @Disabled("I need to figure the db stuff out")
+    public void testHandleLeaving() {
+        // Prepare the test data
+        String uuid = "test-uuid";
+        UUID playerUUID = UUID.randomUUID();
+        Player player = server.addPlayer(playerUUID.toString());
+        World world = server.addSimpleWorld("test-world");
+        Location loc = new Location(world, 10.0, 20.0, 30.0);
+        player.teleport(loc);
 
+        // Call the handleLeaving method
+        vnllaPlayerInfo.handleLeaving(playerUUID.toString(), false);
 
+        // Retrieve the playerConfigModel from the player UUID
+        PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(vnllaPlayerInfo, uuid);
 
-
-
+        // Verify that the last logout time, location, and world are updated correctly
+        assertEquals(10.0, playerConfigModel.getLastLocationX(), 0.001);
+        assertEquals(20.0, playerConfigModel.getLastLocationY(), 0.001);
+        assertEquals(30.0, playerConfigModel.getLastLocationZ(), 0.001);
+        assertEquals("test-world", playerConfigModel.getLastLocationWorld());
+    }
 }
 
