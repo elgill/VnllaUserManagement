@@ -36,9 +36,7 @@ public class Groups implements TabExecutor{
         	}
             StringUtil.copyPartialMatches(args[0], possibiles, completions);
         } else if (args.length == 2) {
-        	for(String group:groups) {
-				possibiles = Arrays.asList(group);
-        	}
+			possibiles = Arrays.asList(groups);
             StringUtil.copyPartialMatches(args[1], possibiles, completions);
         } 
 
