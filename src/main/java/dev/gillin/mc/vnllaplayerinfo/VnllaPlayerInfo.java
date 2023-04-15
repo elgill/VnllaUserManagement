@@ -117,7 +117,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                 playerConfigModel.saveConfig(plugin);
             }
             try {
-                plugin.updateRank(event.getPlayer(), plugin.getPlayerConfig(uuid));
+                plugin.updateRank(event.getPlayer(), playerConfigModel);
             } catch (Exception e) {
                 plugin.broadcastOPs("Error while logging in#0.5 " + e);
             }
@@ -143,25 +143,26 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                     }
 
                     //save player data for joining player
-                    FileConfiguration config = plugin.getPlayerConfig(uuid);
-                    if (!config.isSet(GROUP)) {
+                    PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin,uuid);
+
+                    //TODO: What's this for?
+                    /*if (!config.isSet(GROUP)) {
                         config.set(GROUP, "default");
-                    }
+                    }*/
 
 
                     //TODO: new thread
                     //lose vip if applicable
 
-
-                    config.set("lastPlayerName", name);
-                    List<String> ips = config.getStringList("ips");
+                    playerConfigModel.setLastPlayerName(name);
+                    List<String> ips = playerConfigModel.getIpAddresses();
                     if (!ips.contains(ip)) {
                         ips.add(ip);
-                        config.set("ips", ips);
+                        playerConfigModel.setIpAddresses(ips); // TODO: Is this necessary?
                     }
-                    config.set("playtime.lastLogin", System.currentTimeMillis());
+                    playerConfigModel.setLastLogin(System.currentTimeMillis());
                     //save changes
-                    plugin.savePlayerConfig(config, uuid);
+                    playerConfigModel.saveConfig(plugin);
                     db.insertTokens(uuid, ip);
 
                     //is one of their alts banned?!
@@ -249,7 +250,8 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
 
             return true;
         } else if (command.getName().equalsIgnoreCase("donor") && args.length == 1) {
-            OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
+            //TODO: reimplement this
+            /*OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
             FileConfiguration config = plugin.getPlayerConfig(p.getUniqueId().toString());
             config.set("votes.rank", "vip2");
             long vip2 = config.getLong("votes.vip2expire");
@@ -264,13 +266,14 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             if (!isStaff(config))
                 config.set(GROUP, "vip2");
             config.set("votes.forgeitem", config.getInt("votes.forgeitem") + 1);
-            this.savePlayerConfig(config, p.getUniqueId().toString());
+            this.savePlayerConfig(config, p.getUniqueId().toString());*/
             return true;
         } else if (command.getName().equalsIgnoreCase("forgegiven") && args.length == 1) {
-            OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
+            //TODO: figure this out
+            /*OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
             FileConfiguration config = plugin.getPlayerConfig(p.getUniqueId().toString());
             config.set("votes.forgeitem", config.getInt("votes.forgeitem") - 1);
-            this.savePlayerConfig(config, p.getUniqueId().toString());
+            this.savePlayerConfig(config, p.getUniqueId().toString());*/
             return true;
         } else if (command.getName().equalsIgnoreCase("wipeip") && args.length == 1) {
             OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
@@ -333,19 +336,21 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
     }
 
     public boolean isStaff(FileConfiguration config) {
+        //TODO: is this still needed?
         String group = config.getString(GROUP);
         return group != null && (group.equals("mod") || group.equals("admin") || group.equals("owner"));
     }
 
-    public void updateRank(Player p, FileConfiguration config) {
-        long vip2expire = config.getLong("votes.vip2expire");
-        long vip1expire = config.getLong("votes.vip1expire");
+    public void updateRank(Player p, PlayerConfigModel playerConfigModel) {
+        long vip2expire = playerConfigModel.getVip2Expire();
+        long vip1expire = playerConfigModel.getVip1Expire();
         long current = System.currentTimeMillis();
-        String originalRank = config.getString("votes.rank");
-        String rank = config.getString("votes.rank");
+        //TODO: Rank rework
+        /*String originalRank = config.getString("votes.rank");
+        String rank = config.getString("votes.rank");*/
 
         //if vip2 expires
-        if (rank != null && rank.equalsIgnoreCase("vip2") && vip2expire < current) {
+        /*if (rank != null && rank.equalsIgnoreCase("vip2") && vip2expire < current) {
             //if vip1 still valid
             if (vip1expire > current) {
                 rank = "vip";
@@ -359,7 +364,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         if (rank != null && !originalRank.equals(rank))
             new Groups(plugin).votesRankChange(p, rank, config);
         config.set("votes.rank", rank);
-        this.savePlayerConfig(config, p.getUniqueId().toString());
+        this.savePlayerConfig(config, p.getUniqueId().toString());*/
     }
 
     //TODO not great code but it gets the job done
@@ -370,15 +375,15 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    updatePlayerConfigModel(uuid, loc);
+                    doLeavingTasks(uuid, loc);
                 }
             }.runTaskAsynchronously(plugin);
         } else {
-            updatePlayerConfigModel(uuid, loc);
+            doLeavingTasks(uuid, loc);
         }
     }
 
-    private void updatePlayerConfigModel(String uuid, Location loc) {
+    private void doLeavingTasks(String uuid, Location loc) {
         PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
         long current = System.currentTimeMillis();
         long lastLogin = playerConfigModel.getLastLogin();

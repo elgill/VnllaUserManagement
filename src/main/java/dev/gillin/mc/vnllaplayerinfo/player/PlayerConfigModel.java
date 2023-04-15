@@ -31,6 +31,8 @@ public class PlayerConfigModel {
     private double lastLocationY; //lastlocation.y
     private double lastLocationZ; //lastlocation.z
     private String lastLocationWorld; //lastlocation.world
+    private String lastPlayerName; //lastPlayerName
+    private List<String> ipAddresses;
     private List<String> groups;
     private FileConfiguration config;
 
@@ -156,12 +158,28 @@ public class PlayerConfigModel {
         this.lastLocationWorld = lastLocationWorld;
     }
 
+    public String getLastPlayerName() {
+        return lastPlayerName;
+    }
+
+    public void setLastPlayerName(String lastPlayerName) {
+        this.lastPlayerName = lastPlayerName;
+    }
+
     public List<String> getGroups() {
         return groups;
     }
 
     public void setGroups(List<String> groups) {
         this.groups = groups;
+    }
+
+    public List<String> getIpAddresses() {
+        return ipAddresses;
+    }
+
+    public void setIpAddresses(List<String> ipAddresses) {
+        this.ipAddresses = ipAddresses;
     }
 
     public FileConfiguration getConfig() {
@@ -210,7 +228,18 @@ public class PlayerConfigModel {
             config.set("votes.vip1expire", getVip1Expire());
             config.set("votes.vip2expire", getVip2Expire());
             config.set("votes.owed",getVotesOwed());
-            config.set("groups", groups);
+            config.set("groups", getGroups());
+
+            config.set("playtime.lastLogin", getLastLogin());
+            config.set("playtime.lastLogout", getLastLogout());
+            config.set("playtime.totalAllTime", getTotalPlaytime());
+            config.set("lastlocation.x", getLastLocationX());
+            config.set("lastlocation.y", getLastLocationY());
+            config.set("lastlocation.z", getLastLocationZ());
+            config.set("lastlocation.world", getLastLocationWorld());
+            config.set("lastPlayerName", getLastPlayerName());
+            config.set("ips", getIpAddresses());
+
             config.save(new File( plugin.getDataFolder() + File.separator + "playerdata" + File.separator + playerId + ".yml"));
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Me failed to write changes to the player file, me sorry :(", e);
@@ -224,6 +253,7 @@ public class PlayerConfigModel {
         FileConfiguration config = getPlayerConfig(plugin, uuid);
         PlayerConfigModel data = new PlayerConfigModel();
 
+        data.setPlayerId(uuid);
         data.setTotalVotes(config.getInt("votes.totalVotes"));
         data.setVip1Votes(config.getInt("votes.vip1Votes"));
         data.setVip2Votes(config.getInt("votes.vip2Votes"));
@@ -231,6 +261,18 @@ public class PlayerConfigModel {
         data.setVip1Expire(config.getLong("votes.vip1expire"));
         data.setVip2Expire(config.getLong("votes.vip2expire"));
         data.setVotesOwed(config.getInt("votes.owed"));
+
+        data.setGroups(config.getStringList("groups"));
+        data.setLastLogin(config.getLong("playtime.lastLogin"));
+        data.setLastLogout(config.getLong("playtime.lastLogout"));
+        data.setTotalPlaytime(config.getLong("playtime.totalAllTime"));
+        data.setLastLocationX(config.getDouble("lastlocation.x"));
+        data.setLastLocationY(config.getDouble("lastlocation.Y"));
+        data.setLastLocationZ(config.getDouble("lastlocation.z"));
+        data.setLastLocationWorld(config.getString("lastlocation.world"));
+        data.setLastPlayerName(config.getString("lastPlayerName"));
+        data.setIpAddresses(config.getStringList("ips"));
+
         data.setConfig(config);
 
         return data;

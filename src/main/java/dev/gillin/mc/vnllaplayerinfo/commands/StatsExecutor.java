@@ -2,6 +2,7 @@ package dev.gillin.mc.vnllaplayerinfo.commands;
 
 import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
 import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
+import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -34,16 +35,15 @@ public class StatsExecutor implements CommandExecutor {
                         public void run() {
                             Player p=(Player) sender;
                             Scoreboard main=plugin.getServer().getScoreboardManager().getMainScoreboard();
-                            FileConfiguration config=plugin.getPlayerConfig(p.getUniqueId().toString());
+                            PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin, p.getUniqueId().toString());
 
                             long time=0;
-                            time+=System.currentTimeMillis()-config.getLong("playtime.lastLogin");
+                            time+=System.currentTimeMillis()-playerConfigModel.getLastLogin();
                             //if player has been on before, add the total time recorded
-                            if(config.isSet("playtime.totalAllTime"))
-                                time+=config.getLong("playtime.totalAllTime");
+                            time+=playerConfigModel.getTotalPlaytime();
 
                             sender.sendMessage(ChatColor.YELLOW + p.getName() + "'s Stats:");
-                            sender.sendMessage(ChatColor.YELLOW + "Total Votes: " + ChatColor.GREEN + config.getInt("votes.totalVotes"));
+                            sender.sendMessage(ChatColor.YELLOW + "Total Votes: " + ChatColor.GREEN + playerConfigModel.getTotalVotes());
                             sender.sendMessage(ChatColor.YELLOW + "Playtime: " + ChatColor.GREEN + CommonUtilities.makeTimeReadable(time, true));
                             sender.sendMessage(ChatColor.YELLOW + "Kills: " + ChatColor.GREEN + p.getStatistic(Statistic.PLAYER_KILLS));
                             sender.sendMessage(ChatColor.YELLOW + "Deaths: " + ChatColor.GREEN + p.getStatistic(Statistic.DEATHS));
