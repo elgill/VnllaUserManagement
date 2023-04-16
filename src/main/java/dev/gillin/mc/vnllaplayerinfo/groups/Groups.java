@@ -67,7 +67,8 @@ public class Groups implements TabExecutor{
 			if(args.length==2) {
 				String group=args[1].toLowerCase();
 				OfflinePlayer player=Bukkit.getOfflinePlayer(args[0]);
-				return switchGroups(player, group, sender.hasPermission("groups.owner"), plugin.getPlayerConfig(player.getUniqueId().toString()));
+				return false; //TODO: reimplement
+				//return switchGroups(player, group, sender.hasPermission("groups.owner"), plugin.getPlayerConfig(player.getUniqueId().toString()));
 			}
 		}
 		
@@ -75,7 +76,7 @@ public class Groups implements TabExecutor{
 	}
 
 	
-	public boolean switchGroups(OfflinePlayer p, String group, boolean ownerperm, FileConfiguration config) {
+	/*public boolean switchGroups(OfflinePlayer p, String group, boolean ownerperm, FileConfiguration config) {
 		group=group.toLowerCase();
 		//FileConfiguration config=plugin.getPlayerConfig(p.getUniqueId().toString());		
 		if(group.equalsIgnoreCase("default")) {
@@ -152,7 +153,7 @@ public class Groups implements TabExecutor{
 		
 		
 		return false;
-	}
+	}*/
 
 	public void earnGroup(Player p, GroupModel groupModel){
 		List<String> perms = groupModel.getPermissions();

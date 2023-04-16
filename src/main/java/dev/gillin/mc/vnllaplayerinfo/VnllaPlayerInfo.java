@@ -289,46 +289,6 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         return false;
     }
 
-
-    //returns file from playerdata folder in plugin folder
-    public File getPlayerFile(String uuid) {
-        File f = new File(plugin.getDataFolder() + File.separator + "playerdata" + File.separator + uuid + ".yml");
-        if (!f.exists()) {
-            try {
-                if(f.createNewFile())
-                    logger.log(Level.INFO, "File created: {0}.yml", uuid);
-                else
-                    logger.log(Level.SEVERE,"Failed to create file: {0}.yml", uuid);
-
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "Me failed to make the new player file, me sorry :(", e);
-            }
-        }
-        return f;
-    }
-
-
-    public FileConfiguration getPlayerConfig(String uuid) {
-        FileConfiguration config = YamlConfiguration.loadConfiguration(getPlayerFile(uuid));
-        if (!config.isSet("uuid")) {
-            config.set("uuid", uuid);
-        }
-        if (!config.isSet(GROUP)) {
-            config.set(GROUP, "default");
-        }
-        return config;
-    }
-
-    //save changes in config file
-    public boolean savePlayerConfig(FileConfiguration config, String uuid) {
-        try {
-            config.save(new File(plugin.getDataFolder() + File.separator + "playerdata" + File.separator + uuid + ".yml"));
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Me failed to write changes to the player file, me sorry :(", e);
-        }
-        return true;
-    }
-
     public void broadcastOPs(String s) {
         for (Player p : getServer().getOnlinePlayers()) {
             if (p.isOp())
@@ -362,7 +322,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         playerConfigModel.saveConfig(plugin);
     }
 
-    //TODO not great code but it gets the job done
+    //TODO not great code but it gets the job done - Check if this works now
     //had to add a synchronous way because asynchronous doesn't work when server is shutting down
     public void handleLeaving(String uuid, boolean async) {
         Location loc = plugin.getServer().getPlayer(UUID.fromString(uuid)).getLocation();
