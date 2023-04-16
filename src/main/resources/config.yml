@@ -25,10 +25,9 @@ groups:
       votes: 25
       ranklength: 2592000
       earnRankCommands:
-         - lp user %PLAYER% parent removetemp vip
-         - lp user %PLAYER% parent addtemp vip %EXPIRE% replace
+         - say %PLAYER% earned vip
       loseRankCommands:
-         - lp user %PLAYER% parent removetemp vip
+         - say %PLAYER% lost vip
       permissions:
          - some.permission.vip1
       voteAchievable: true
@@ -37,10 +36,9 @@ groups:
       votes: 60
       ranklength: 2592000
       earnRankCommands:
-         - lp user %PLAYER% parent removetemp vip2
-         - lp user %PLAYER% parent addtemp vip2 %EXPIRE% replace
+         - say %PLAYER% earned vip2
       loseRankCommands:
-         - lp user %PLAYER% parent removetemp vip2
+         - say %PLAYER% lost vip2
       permissions:
          - some.permission.vip2
       voteAchievable: true
@@ -49,10 +47,10 @@ groups:
       votes: 0
       ranklength: 2592000
       earnRankCommands:
-         - lp user %PLAYER% parent removetemp donor
-         - lp user %PLAYER% parent addtemp donor %EXPIRE% replace
+         - say %PLAYER% given donor
+         - say %PLAYER% given donor2!
       loseRankCommands:
-         - lp user %PLAYER% parent removetemp donor
+         - say %PLAYER% lose donor :/
       permissions:
          - some.permission.donor
       voteAchievable: false
@@ -61,10 +59,9 @@ groups:
       votes: 0
       ranklength: 0
       earnRankCommands:
-         - lp user %PLAYER% parent removetemp mod
-         - lp user %PLAYER% parent addtemp mod %EXPIRE% replace
+         - say %PLAYER% given mod
       loseRankCommands:
-         - lp user %PLAYER% parent removetemp mod
+         - say %PLAYER% lost mod
       permissions:
          - some.permission.mod
       voteAchievable: false
@@ -73,19 +70,20 @@ groups:
       votes: 0
       ranklength: 0
       earnRankCommands:
-         - lp user %PLAYER% parent removetemp mod
-         - lp user %PLAYER% parent addtemp mod %EXPIRE% replace
+         - say %PLAYER% given admin
       loseRankCommands:
-         - lp user %PLAYER% parent removetemp mod
+         - say %PLAYER% lost admin
       permissions:
-         - some.permission.mod
+         - some.permission.admin
       voteAchievable: false
    owner:
       displayname: "Owner"
       votes: 0
       ranklength: 0
-      earnRankCommands: []
-      loseRankCommands: []
+      earnRankCommands:
+         - say %PLAYER% given owner
+      loseRankCommands:
+         - say %PLAYER% lose owner
       permissions:
          - some.permission.owner
       voteAchievable: false

@@ -171,7 +171,8 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                             ClickEvent banPlay = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
                                     String.format("/ban %s Alt of banned player: %s. Banned for %s", name, p.getName(), reason));
                             String[] strings = {p.getName(), " was banned for: ", reason};
-                            net.md_5.bungee.api.ChatColor[] colors = {net.md_5.bungee.api.ChatColor.DARK_RED, net.md_5.bungee.api.ChatColor.RED, net.md_5.bungee.api.ChatColor.YELLOW};
+                            net.md_5.bungee.api.ChatColor[] colors = {net.md_5.bungee.api.ChatColor.DARK_RED,
+                                    net.md_5.bungee.api.ChatColor.RED, net.md_5.bungee.api.ChatColor.YELLOW};
 
                             TextComponent[] textComponents = new TextComponent[strings.length];
                             for (int x = 0; x < textComponents.length; x++) {
@@ -304,7 +305,11 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
     //TODO not great code but it gets the job done - Check if this works now
     //had to add a synchronous way because asynchronous doesn't work when server is shutting down
     public void handleLeaving(String uuid, boolean async) {
-        Location loc = plugin.getServer().getPlayer(UUID.fromString(uuid)).getLocation();
+        Player player = plugin.getServer().getPlayer(UUID.fromString(uuid));
+        if(player == null){
+            return;
+        }
+        Location loc = player.getLocation();
         if (async) {
             new BukkitRunnable() {
                 @Override
@@ -330,7 +335,10 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         playerConfigModel.setLastLocationX(loc.getX());
         playerConfigModel.setLastLocationY(loc.getY());
         playerConfigModel.setLastLocationZ(loc.getZ());
-        playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
+        World world = loc.getWorld();
+        if(world != null){
+            playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
+        }
 
         playerConfigModel.saveConfig(plugin);
     }
