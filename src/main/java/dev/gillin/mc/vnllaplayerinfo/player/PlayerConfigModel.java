@@ -59,22 +59,6 @@ public class PlayerConfigModel {
         this.totalVotes = totalVotes;
     }
 
-    public int getVip1Votes() {
-        return vip1Votes;
-    }
-
-    public void setVip1Votes(int vip1Votes) {
-        this.vip1Votes = vip1Votes;
-    }
-
-    public int getVip2Votes() {
-        return vip2Votes;
-    }
-
-    public void setVip2Votes(int vip2Votes) {
-        this.vip2Votes = vip2Votes;
-    }
-
     public int getVotesOwed() {
         return votesOwed;
     }
@@ -83,29 +67,6 @@ public class PlayerConfigModel {
         this.votesOwed = votesOwed;
     }
 
-    public String getRank() {
-        return rank;
-    }
-
-    public void setRank(String rank) {
-        this.rank = rank;
-    }
-
-    public long getVip1Expire() {
-        return vip1Expire;
-    }
-
-    public void setVip1Expire(long vip1Expire) {
-        this.vip1Expire = vip1Expire;
-    }
-
-    public long getVip2Expire() {
-        return vip2Expire;
-    }
-
-    public void setVip2Expire(long vip2Expire) {
-        this.vip2Expire = vip2Expire;
-    }
 
     public long getLastLogin() {
         return lastLogin;
@@ -235,11 +196,6 @@ public class PlayerConfigModel {
     public boolean saveConfig(VnllaPlayerInfo plugin) {
         try {
             config.set("votes.totalVotes", getTotalVotes());
-            config.set("votes.vip1Votes", getVip1Votes());
-            config.set("votes.vip2Votes", getVip2Votes());
-            config.set("votes.rank", getRank());
-            config.set("votes.vip1expire", getVip1Expire());
-            config.set("votes.vip2expire", getVip2Expire());
             config.set("votes.owed",getVotesOwed());
             config.set("groups", getGroups());
 
@@ -281,11 +237,6 @@ public class PlayerConfigModel {
 
         data.setPlayerId(uuid);
         data.setTotalVotes(config.getInt("votes.totalVotes"));
-        data.setVip1Votes(config.getInt("votes.vip1Votes"));
-        data.setVip2Votes(config.getInt("votes.vip2Votes"));
-        data.setRank(config.getString("votes.rank"));
-        data.setVip1Expire(config.getLong("votes.vip1expire"));
-        data.setVip2Expire(config.getLong("votes.vip2expire"));
         data.setVotesOwed(config.getInt("votes.owed"));
 
         data.setGroups(config.getStringList("groups"));
@@ -293,7 +244,7 @@ public class PlayerConfigModel {
         data.setLastLogout(config.getLong("playtime.lastLogout"));
         data.setTotalPlaytime(config.getLong("playtime.totalAllTime"));
         data.setLastLocationX(config.getDouble("lastlocation.x"));
-        data.setLastLocationY(config.getDouble("lastlocation.Y"));
+        data.setLastLocationY(config.getDouble("lastlocation.y"));
         data.setLastLocationZ(config.getDouble("lastlocation.z"));
         data.setLastLocationWorld(config.getString("lastlocation.world"));
         data.setLastPlayerName(config.getString("lastPlayerName"));

@@ -32,7 +32,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+//TODO: Rename VnllaUserManagement
 public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlayerInfo {
     public static final String FORGE = "forge";
     public static final String GROUP = "group";
