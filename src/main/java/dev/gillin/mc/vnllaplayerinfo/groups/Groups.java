@@ -74,13 +74,7 @@ public class Groups implements TabExecutor{
 		
 		return false;
 	}
-	
-	public void votesRankChange(OfflinePlayer p, String newRank, FileConfiguration config) {
-		String group=config.getString("group");
-		if(group.equals("default")||group.equals("vip")||group.equals("vip2")) {
-			switchGroups(p,newRank,false, config);
-		}
-	}
+
 	
 	public boolean switchGroups(OfflinePlayer p, String group, boolean ownerperm, FileConfiguration config) {
 		group=group.toLowerCase();

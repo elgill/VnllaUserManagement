@@ -6,8 +6,10 @@ import dev.gillin.mc.vnllaplayerinfo.commands.LastLocationExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusIPExecutor;
+import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
 import dev.gillin.mc.vnllaplayerinfo.groups.Groups;
 import dev.gillin.mc.vnllaplayerinfo.handlers.VoteHandler;
+import dev.gillin.mc.vnllaplayerinfo.player.GroupInfo;
 import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -31,10 +33,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -123,7 +122,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                 playerConfigModel.saveConfig(plugin);
             }
             try {
-                plugin.updateRank(event.getPlayer(), playerConfigModel);
+                plugin.checkLoseGroup(event.getPlayer(), playerConfigModel);
             } catch (Exception e) {
                 plugin.broadcastOPs("Error while logging in#0.5 " + e);
             }
@@ -347,30 +346,20 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         return group != null && (group.equals("mod") || group.equals("admin") || group.equals("owner"));
     }
 
-    public void updateRank(Player p, PlayerConfigModel playerConfigModel) {
-        long vip2expire = playerConfigModel.getVip2Expire();
-        long vip1expire = playerConfigModel.getVip1Expire();
-        long current = System.currentTimeMillis();
-        //TODO: Rank rework
-        /*String originalRank = config.getString("votes.rank");
-        String rank = config.getString("votes.rank");*/
-
-        //if vip2 expires
-        /*if (rank != null && rank.equalsIgnoreCase("vip2") && vip2expire < current) {
-            //if vip1 still valid
-            if (vip1expire > current) {
-                rank = "vip";
-            } else {
-                rank = "default";
+    public void checkLoseGroup(Player p, PlayerConfigModel playerConfigModel) {
+        long currentTime = System.currentTimeMillis();
+        HashMap<String, GroupInfo> groupInfoMap = playerConfigModel.getGroupInfos();
+        for(String groupInfoKey: groupInfoMap.keySet()){
+            GroupInfo groupInfo = groupInfoMap.get(groupInfoKey);
+            if(groupInfo.isActive() && groupInfo.getExpiration() < currentTime){
+                groupInfo.setActive(false);
+                GroupModel groupModel;
+                //TODO: Lose rank command and perms
             }
+            groupInfoMap.put(groupInfoKey,groupInfo);
         }
-        if (rank != null && rank.equalsIgnoreCase("vip") && vip1expire < current) {
-            rank = "default";
-        }
-        if (rank != null && !originalRank.equals(rank))
-            new Groups(plugin).votesRankChange(p, rank, config);
-        config.set("votes.rank", rank);
-        this.savePlayerConfig(config, p.getUniqueId().toString());*/
+        playerConfigModel.setGroupInfos(groupInfoMap);
+        playerConfigModel.saveConfig(plugin);
     }
 
     //TODO not great code but it gets the job done

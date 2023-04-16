@@ -2,10 +2,8 @@ package dev.gillin.mc.vnllaplayerinfo.handlers;
 
 import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
 import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
-import dev.gillin.mc.vnllaplayerinfo.groups.Groups;
 import dev.gillin.mc.vnllaplayerinfo.player.GroupInfo;
 import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,12 +13,8 @@ import java.util.HashMap;
 
 public class VoteHandler {
     public void giveVote(VnllaPlayerInfo plugin, Player p, PlayerConfigModel playerConfigModel, int numVotes) {
-        String rank = playerConfigModel.getRank();
         if (numVotes <= 0)
             return;
-        if (rank==null) {
-            rank = "default";
-        }
 
         //TODO: Move this to ServerConfigModel
         p.giveExpLevels(numVotes * plugin.getConfig().getInt("votes.xplevels"));
