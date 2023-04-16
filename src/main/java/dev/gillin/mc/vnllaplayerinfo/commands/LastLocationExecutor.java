@@ -2,6 +2,7 @@ package dev.gillin.mc.vnllaplayerinfo.commands;
 
 import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
 import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
+import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,12 +30,13 @@ public class LastLocationExecutor implements CommandExecutor {
                 return false;
             }
             //get location and tp player to it
-            FileConfiguration config = plugin.getPlayerConfig(uuid);
-            if (!config.isSet("lastlocation")) {
+            PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin,uuid);
+            if (playerConfigModel.getLastLocationWorld() == null) {
                 sender.sendMessage(ChatColor.GREEN + "This is the player's first session so they don't have one :)");
                 return true;
             }
-            Location loc = new Location(Bukkit.getWorld(config.getString("lastlocation.world")), config.getDouble("lastlocation.x"), config.getDouble("lastlocation.y"), config.getDouble("lastlocation.z"));
+            Location loc = new Location(Bukkit.getWorld(playerConfigModel.getLastLocationWorld()),
+                    playerConfigModel.getLastLocationX(), playerConfigModel.getLastLocationY(), playerConfigModel.getLastLocationZ());
             plugin.getServer().getPlayer(sender.getName()).teleport(loc);
 
             return true;

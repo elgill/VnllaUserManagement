@@ -15,7 +15,7 @@ public class CommonUtilities {
         if (len > 36) {
             return false;
         }
-        int dash1 = uuid.indexOf('-', 0);
+        int dash1 = uuid.indexOf('-');
         int dash2 = uuid.indexOf('-', dash1 + 1);
         int dash3 = uuid.indexOf('-', dash2 + 1);
         int dash4 = uuid.indexOf('-', dash3 + 1);

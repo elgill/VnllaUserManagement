@@ -47,6 +47,7 @@ public class StatsExecutor implements CommandExecutor {
                             sender.sendMessage(ChatColor.YELLOW + "Playtime: " + ChatColor.GREEN + CommonUtilities.makeTimeReadable(time, true));
                             sender.sendMessage(ChatColor.YELLOW + "Kills: " + ChatColor.GREEN + p.getStatistic(Statistic.PLAYER_KILLS));
                             sender.sendMessage(ChatColor.YELLOW + "Deaths: " + ChatColor.GREEN + p.getStatistic(Statistic.DEATHS));
+                            //TODO: Server config for objectives
                             if (main.getObjective("su_points") != null)
                                 sender.sendMessage(ChatColor.YELLOW + "Survival Points: " + ChatColor.GREEN+main.getObjective("su_points").getScore(p.getName()).getScore());
                         }

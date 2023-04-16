@@ -2,6 +2,7 @@ package dev.gillin.mc.vnllaplayerinfo.commands;
 
 import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
 import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
+import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -39,9 +40,11 @@ public class StatusExecutor implements CommandExecutor{
 						String uuid=p.getUniqueId().toString();
 						ArrayList<String> ips=plugin.getDB().getIPsByUUID(uuid);
 						ArrayList<String> alts=new ArrayList<>();
-						
-						FileConfiguration config=plugin.getPlayerConfig(uuid);
-						
+
+						PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
+						//FileConfiguration config=plugin.getPlayerConfig(uuid);
+
+						//TODO: move to server config
 						Scoreboard main=Bukkit.getScoreboardManager().getMainScoreboard();
 						int su_points=0;
 						int timesSuspected=0;
@@ -69,65 +72,68 @@ public class StatusExecutor implements CommandExecutor{
 						
 						
 						//if player has ever logged in
-						if(config.isSet("playtime.lastLogin")) {
+						if(playerConfigModel.getLastLogin()>0) {
 							try {
-							String rank=config.getString("votes.rank");
+								//TODO: Should we replace this?
+							/*String rank=config.getString("votes.rank");
 							sender.sendMessage(ChatColor.LIGHT_PURPLE+"viprank: "+ChatColor.WHITE+rank);
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"group: "+ChatColor.WHITE+config.getString("group"));
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"IP: "+ChatColor.WHITE+ips.toString());
+							sender.sendMessage(ChatColor.LIGHT_PURPLE+"group: "+ChatColor.WHITE+config.getString("group"));*/
+
+								sender.sendMessage(ChatColor.LIGHT_PURPLE+"IP: "+ChatColor.WHITE+ips.toString());
 							
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"Total Votes: "+ChatColor.WHITE+config.getInt("votes.totalVotes"));
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"Vip1 Votes: "+ChatColor.WHITE+config.getInt("votes.vip1Votes"));
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"Vip2 Votes: "+ChatColor.WHITE+config.getInt("votes.vip2Votes"));
-							Date expire;
-							if(rank!=null&&rank.equalsIgnoreCase("vip"))
-								expire=new Date(config.getLong("votes.vip1expire"));
-							else if(rank!=null&&rank.equalsIgnoreCase("vip2"))
-								expire=new Date(config.getLong("votes.vip2expire"));
-							else
-								expire=null;
-							if(expire!=null)
-								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Rank Expires: "+ChatColor.WHITE+ expire);
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"su_points: "+ChatColor.WHITE+su_points);
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"Times Suspected: "+ChatColor.WHITE+timesSuspected);
-							if(config.isSet("votes.forgeitem"))
-								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Forge items owed: "+ChatColor.WHITE+config.getInt("votes.forgeitem"));
+								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Total Votes: "+ChatColor.WHITE+playerConfigModel.getTotalVotes());
+								//TODO: replace this
+								/*sender.sendMessage(ChatColor.LIGHT_PURPLE+"Vip1 Votes: "+ChatColor.WHITE +pl);
+								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Vip2 Votes: "+ChatColor.WHITE+config.getInt("votes.vip2Votes"));*/
+								/*Date expire;
+								if(rank!=null&&rank.equalsIgnoreCase("vip"))
+									expire=new Date(config.getLong("votes.vip1expire"));
+								else if(rank!=null&&rank.equalsIgnoreCase("vip2"))
+									expire=new Date(config.getLong("votes.vip2expire"));
+								else
+									expire=null;
+								if(expire!=null)
+									sender.sendMessage(ChatColor.LIGHT_PURPLE+"Rank Expires: "+ChatColor.WHITE+ expire);*/
+								//TODO: Server Config
+								/*sender.sendMessage(ChatColor.LIGHT_PURPLE+"su_points: "+ChatColor.WHITE+su_points);
+								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Times Suspected: "+ChatColor.WHITE+timesSuspected);
+								if(config.isSet("votes.forgeitem"))
+									sender.sendMessage(ChatColor.LIGHT_PURPLE+"Forge items owed: "+ChatColor.WHITE+config.getInt("votes.forgeitem"));
+								*/
+								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Player Kills: "+ChatColor.WHITE+p.getStatistic(Statistic.PLAYER_KILLS));
 							
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"Player Kills: "+ChatColor.WHITE+p.getStatistic(Statistic.PLAYER_KILLS));
+								if(sender.hasPermission("VnllaPlayerInfo.seestatusalt")) {
+									sender.sendMessage(ChatColor.LIGHT_PURPLE+"Known Alts: "+ChatColor.WHITE+ alts);
+								}
 							
-							if(sender.hasPermission("VnllaPlayerInfo.seestatusalt")) 
-								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Known Alts: "+ChatColor.WHITE+ alts);
-							
-							long time=0;
-							//if online, add time since login
-							if(p.isOnline())
-								time+=System.currentTimeMillis()-config.getLong("playtime.lastLogin");
-							//if player has been on before, add the total time recorded
-							if(config.isSet("playtime.totalAllTime")) 
-								time+=config.getLong("playtime.totalAllTime");
-							sender.sendMessage(ChatColor.LIGHT_PURPLE+"Total Playtime: "+ChatColor.WHITE+ CommonUtilities.makeTimeReadable(time, true));
-							
-		
-							if(config.isSet("playtime.lastLogin")) 
-								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Login: "+ChatColor.WHITE+CommonUtilities.makeTimeReadable(System.currentTimeMillis()-config.getLong("playtime.lastLogin"), false)+" ago");
-							
-							
-							if(p.isOnline()) 
-								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Online: "+ChatColor.WHITE+"Now");
-							else if(config.isSet("playtime.lastLogout")) {
-								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Online: "+ChatColor.WHITE+CommonUtilities.makeTimeReadable(System.currentTimeMillis()-config.getLong("playtime.lastLogout"), false)+" ago");
-							}
-							//long code to make it execute /lastlocation [uuid] when the yellow here is pressed
-							
-							
-							TextComponent lastLoc=new TextComponent("Last Location: ");
-							lastLoc.setColor(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE);
-							TextComponent click=new TextComponent("here");
-							ClickEvent c=new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/lastlocation "+uuid);
-							click.setClickEvent(c);
-							click.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
-							sender.spigot().sendMessage(lastLoc,click);
-							
+								long time = playerConfigModel.getTotalPlaytime();
+								//if online, add time since login
+								if(p.isOnline()){
+									time+=System.currentTimeMillis() - playerConfigModel.getLastLogin();
+								}
+								sender.sendMessage(ChatColor.LIGHT_PURPLE+"Total Playtime: "+ChatColor.WHITE+ CommonUtilities.makeTimeReadable(time, true));
+
+								if(playerConfigModel.getLastLogin() > 0) {
+									sender.sendMessage(ChatColor.LIGHT_PURPLE + "Last Login: " + ChatColor.WHITE + CommonUtilities.makeTimeReadable(System.currentTimeMillis() - playerConfigModel.getLastLogin(), false) + " ago");
+								}
+
+								if(p.isOnline()) {
+									sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Online: "+ChatColor.WHITE+"Now");
+								}
+								else if(playerConfigModel.getLastLogout() > 0) {
+									sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Online: "+ChatColor.WHITE+CommonUtilities.makeTimeReadable(System.currentTimeMillis() - playerConfigModel.getLastLogout(), false)+" ago");
+								}
+								//long code to make it execute /lastlocation [uuid] when the yellow here is pressed
+
+
+								TextComponent lastLoc=new TextComponent("Last Location: ");
+								lastLoc.setColor(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE);
+								TextComponent click=new TextComponent("here");
+								ClickEvent c=new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/lastlocation "+uuid);
+								click.setClickEvent(c);
+								click.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+								sender.spigot().sendMessage(lastLoc,click);
+
 							} 
 							catch(Exception e) {
 								sender.sendMessage("Something went wrong...");

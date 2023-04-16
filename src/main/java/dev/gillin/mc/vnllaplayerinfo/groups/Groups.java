@@ -19,9 +19,8 @@ import java.util.List;
 
 public class Groups implements TabExecutor{
 	private final VnllaPlayerInfo plugin;
-	private List<GroupModel> groupModels;
-	private List<GroupModel> voteGroupModels;
-	//static final String[] groups= {"default","vip","vip2","mod","admin","owner"};
+	private final List<GroupModel> groupModels;
+	private final List<GroupModel> voteGroupModels;
 
 	public Groups(VnllaPlayerInfo p) {
 		plugin=p;
