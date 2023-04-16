@@ -33,7 +33,7 @@ public class VnllaPlayerInfoTest {
     @Disabled("I need to figure the db stuff out")
     public void testHandleLeaving() {
         // Prepare the test data
-        String uuid = "test-uuid";
+        /*String uuid = "test-uuid";
         UUID playerUUID = UUID.randomUUID();
         Player player = server.addPlayer(playerUUID.toString());
         World world = server.addSimpleWorld("test-world");
@@ -50,7 +50,7 @@ public class VnllaPlayerInfoTest {
         assertEquals(10.0, playerConfigModel.getLastLocationX(), 0.001);
         assertEquals(20.0, playerConfigModel.getLastLocationY(), 0.001);
         assertEquals(30.0, playerConfigModel.getLastLocationZ(), 0.001);
-        assertEquals("test-world", playerConfigModel.getLastLocationWorld());
+        assertEquals("test-world", playerConfigModel.getLastLocationWorld());*/
     }
 }
 

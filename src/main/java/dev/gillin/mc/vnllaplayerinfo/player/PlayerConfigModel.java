@@ -2,6 +2,7 @@ package dev.gillin.mc.vnllaplayerinfo.player;
 
 import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,7 +10,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +39,7 @@ public class PlayerConfigModel {
     private List<String> ipAddresses;
     private List<String> groups;
     private FileConfiguration config;
+    private HashMap<String, GroupInfo> groupInfos;
 
     static final Logger logger = Bukkit.getLogger();
 
@@ -182,6 +187,14 @@ public class PlayerConfigModel {
         this.ipAddresses = ipAddresses;
     }
 
+    public HashMap<String, GroupInfo> getGroupInfos() {
+        return groupInfos;
+    }
+
+    public void setGroupInfos(HashMap<String, GroupInfo> groupInfos) {
+        this.groupInfos = groupInfos;
+    }
+
     public FileConfiguration getConfig() {
         return config;
     }
@@ -240,6 +253,19 @@ public class PlayerConfigModel {
             config.set("lastPlayerName", getLastPlayerName());
             config.set("ips", getIpAddresses());
 
+            if (config.isConfigurationSection("earnedGroups")) {
+                config.set("earnedGroups", null);
+            }
+
+            ConfigurationSection groupsSection = config.createSection("earnedGroups");
+            for (Map.Entry<String, GroupInfo> entry : getGroupInfos().entrySet()) {
+                GroupInfo groupInfo = entry.getValue();
+                ConfigurationSection groupSection = groupsSection.createSection(entry.getKey());
+                groupSection.set("active", groupInfo.isActive());
+                groupSection.set("currentVotes", groupInfo.getCurrentVotes());
+                groupSection.set("expiration", groupInfo.getExpiration());
+            }
+
             config.save(new File( plugin.getDataFolder() + File.separator + "playerdata" + File.separator + playerId + ".yml"));
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Me failed to write changes to the player file, me sorry :(", e);
@@ -272,6 +298,23 @@ public class PlayerConfigModel {
         data.setLastLocationWorld(config.getString("lastlocation.world"));
         data.setLastPlayerName(config.getString("lastPlayerName"));
         data.setIpAddresses(config.getStringList("ips"));
+
+        ConfigurationSection groupsSection = config.getConfigurationSection("earnedGroups");
+        HashMap<String, GroupInfo> groupInfos = new HashMap<>();
+        if (groupsSection != null) {
+            for (String groupName : groupsSection.getKeys(false)) {
+                ConfigurationSection groupSection = groupsSection.getConfigurationSection(groupName);
+                GroupInfo groupInfo = new GroupInfo(groupName);
+
+                groupInfo.setGroupName(groupName);
+                groupInfo.setCurrentVotes(groupSection.getInt("currentVotes"));
+                groupInfo.setActive(groupSection.getBoolean("active"));
+                groupInfo.setExpiration(groupSection.getLong("expiration"));
+
+                groupInfos.put(groupName, groupInfo);
+            }
+        }
+        data.setGroupInfos(groupInfos);
 
         data.setConfig(config);
 

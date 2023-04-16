@@ -6,6 +6,7 @@ import dev.gillin.mc.vnllaplayerinfo.commands.LastLocationExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusIPExecutor;
+import dev.gillin.mc.vnllaplayerinfo.groups.Groups;
 import dev.gillin.mc.vnllaplayerinfo.handlers.VoteHandler;
 import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -31,13 +32,17 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlayerInfo {
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     public static final String FORGE = "forge";
     public static final String GROUP = "group";
     private final VnllaPlayerInfo plugin = this;
@@ -95,8 +100,9 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
 
     @Override
     public void onDisable() {
+        Collection<? extends Player> playerList=getServer().getOnlinePlayers();
         //log leave times for players on /stop
-        for (Player p : getServer().getOnlinePlayers()) {
+        for (Player p : playerList) {
             handleLeaving(p.getUniqueId().toString(), false);
         }
     }
@@ -404,6 +410,10 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
     //actually completely useless
     public Database getDB() {
         return this.db;
+    }
+
+    public Groups getGroups() {
+        return groups;
     }
 
     @Override

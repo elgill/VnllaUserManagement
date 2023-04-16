@@ -3,6 +3,7 @@ package dev.gillin.mc.vnllaplayerinfo.groups;
 import java.util.List;
 
 public class GroupModel {
+    private String groupKey;
     private String displayName;
     private int votesRequired;
     private long rankLength;
@@ -11,13 +12,26 @@ public class GroupModel {
     private boolean voteAchievable;
     private List<String> permissions;
 
-    public GroupModel(String displayName, int votesRequired, long rankLength, List<String> earnRankCommands, List<String> loseRankCommands, boolean voteAchievable, List<String> permissions) {
+    public GroupModel(String groupKey, String displayName, int votesRequired, long rankLength, List<String> earnRankCommands, List<String> loseRankCommands, boolean voteAchievable, List<String> permissions) {
+        this.groupKey = groupKey;
         this.displayName = displayName;
         this.votesRequired = votesRequired;
         this.rankLength = rankLength;
         this.earnRankCommands = earnRankCommands;
         this.loseRankCommands = loseRankCommands;
         this.voteAchievable = voteAchievable;
+        this.permissions = permissions;
+    }
+
+    public String getGroupKey() {
+        return groupKey;
+    }
+
+    public void setGroupKey(String groupKey) {
+        this.groupKey = groupKey;
+    }
+
+    public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
     }
 
