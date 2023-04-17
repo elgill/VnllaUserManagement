@@ -62,6 +62,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         registerCommand("donor", this);
         registerCommand("wipeip", this);
 
+        //TODO: Break this off into different plugin
         TabExecutor forge = new Forge(this);
         registerCommand(FORGE, forge);
 
@@ -203,20 +204,16 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String commandLabel, String[] args) {
         if (command.getName().equalsIgnoreCase("givevote") && args.length == 1) {
-            OfflinePlayer p;
             String playerInput = args[0];
-            if(CommonUtilities.isValidUUID(playerInput)){
-                p = getServer().getOfflinePlayer(UUID.fromString(args[0]));
-            } else {
-                p = getServer().getOfflinePlayer(args[0]);
-            }
+            OfflinePlayer p = CommonUtilities.getOfflinePlayerByString(playerInput);
 
             logger.log(Level.INFO, "Vote given to {0}", p.getName());
             PlayerConfigModel playerConfigModel= PlayerConfigModel.fromUUID(plugin,p.getUniqueId().toString());
-            if (p.isOnline())
+            if (p.isOnline()) {
                 giveVote((Player) p, playerConfigModel, 1);
+            }
             else {
-                playerConfigModel.setVotesOwed(playerConfigModel.getVotesOwed()+1);
+                playerConfigModel.setVotesOwed(playerConfigModel.getVotesOwed() + 1);
                 playerConfigModel.saveConfig(plugin);
             }
 
@@ -267,12 +264,6 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         voteHandler.giveVote(plugin,p,playerConfigModel,num);
     }
 
-/*    public boolean isStaff(FileConfiguration config) {
-        //TODO: is this still needed?
-        String group = config.getString(GROUP);
-        return group != null && (group.equals("mod") || group.equals("admin") || group.equals("owner"));
-    }*/
-
     private void registerCommand(String commandName, CommandExecutor executor) {
         PluginCommand command = getCommand(commandName);
         if (command != null) {
@@ -284,7 +275,6 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             getLogger().warning("The '" + commandName + "' command was not found. Please check your plugin.yml file.");
         }
     }
-
 
     public void checkLoseGroup(Player p, PlayerConfigModel playerConfigModel) {
         long currentTime = System.currentTimeMillis();
@@ -328,10 +318,11 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         long lastLogin = playerConfigModel.getLastLogin();
 
         playerConfigModel.setLastLogout(current);
-        long add = (current - lastLogin);
-        if (add < (1000 * 60 * 60 * 12))
-            playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime() + add);
-
+        long currentSessionLength = (current - lastLogin);
+        if (currentSessionLength < (1000 * 60 * 60 * 12)) {
+            playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime() + currentSessionLength);
+        }
+        //TODO: Investigate why I did LastLocation manually- Location object would be better
         playerConfigModel.setLastLocationX(loc.getX());
         playerConfigModel.setLastLocationY(loc.getY());
         playerConfigModel.setLastLocationZ(loc.getZ());
@@ -343,7 +334,6 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         playerConfigModel.saveConfig(plugin);
     }
 
-    //actually completely useless
     public Database getDB() {
         return this.db;
     }

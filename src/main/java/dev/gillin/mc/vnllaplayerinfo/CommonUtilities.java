@@ -1,5 +1,10 @@
 package dev.gillin.mc.vnllaplayerinfo;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+
+import java.util.UUID;
+
 public class CommonUtilities {
     private CommonUtilities() {
         throw new IllegalStateException("Utility class");
@@ -46,6 +51,18 @@ public class CommonUtilities {
         else {
             return (t / (3600 * 24)) + " day(s)";
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static OfflinePlayer getOfflinePlayerByString(String playerInputted){
+        OfflinePlayer player;
+        if(CommonUtilities.isValidUUID(playerInputted)){
+            player = Bukkit.getOfflinePlayer(UUID.fromString(playerInputted));
+        } else {
+            // Deprecated, but no good replacement TODO: Ensure this is still true
+            player = Bukkit.getOfflinePlayer(playerInputted);
+        }
+        return player;
     }
 
 }
