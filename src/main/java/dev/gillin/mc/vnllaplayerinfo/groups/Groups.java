@@ -59,6 +59,15 @@ public class Groups implements TabExecutor{
         Collections.sort(completions);
         return completions;
     }
+
+	public GroupModel getGroupModelByKey(String groupKey) {
+		for (GroupModel groupModel : groupModels) {
+			if (groupModel.getGroupKey().equalsIgnoreCase(groupKey)) {
+				return groupModel;
+			}
+		}
+		return null;
+	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -163,7 +172,15 @@ public class Groups implements TabExecutor{
 			cmd.replaceAll("%PLAYER%", p.getName());
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
 		}
-
+	}
+	public void loseGroup(Player p, GroupModel groupModel){
+		List<String> perms = groupModel.getPermissions();
+		//TODO: Revoke perms
+		List<String> loseRankCommands = groupModel.getLoseRankCommands();
+		for(String cmd: loseRankCommands){
+			cmd.replaceAll("%PLAYER%", p.getName());
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+		}
 	}
 
 }

@@ -293,8 +293,8 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             GroupInfo groupInfo = groupInfoMap.get(groupInfoKey);
             if(groupInfo.isActive() && groupInfo.getExpiration() < currentTime){
                 groupInfo.setActive(false);
-                GroupModel groupModel;
-                //TODO: Lose rank command and perms
+                GroupModel groupModel = groups.getGroupModelByKey(groupInfoKey);
+                groups.loseGroup(p, groupModel);
             }
             groupInfoMap.put(groupInfoKey,groupInfo);
         }
