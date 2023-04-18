@@ -29,7 +29,7 @@ public class StatusIPExecutor implements CommandExecutor {
                 public void run() {
                     sender.sendMessage(ChatColor.LIGHT_PURPLE+"IP: "+ChatColor.WHITE+args[0]);
                     ArrayList<String> ign=new ArrayList<>();
-                    for(String s:plugin.getDB().getUUIDsByIP(args[0])) {
+                    for(String s:plugin.getPlayerData().getUUIDsByIP(args[0])) {
                         ign.add(Bukkit.getOfflinePlayer(UUID.fromString(s)).getName());
                     }
                     sender.sendMessage(ChatColor.LIGHT_PURPLE+"Accounts: "+ChatColor.WHITE+ ign);

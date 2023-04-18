@@ -14,6 +14,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class StatusExecutor implements CommandExecutor{
@@ -36,8 +37,8 @@ public class StatusExecutor implements CommandExecutor{
 		            	@SuppressWarnings("deprecation")
 						OfflinePlayer p=Bukkit.getOfflinePlayer(args[0]);
 						String uuid=p.getUniqueId().toString();
-						ArrayList<String> ips=plugin.getDB().getIPsByUUID(uuid);
-						ArrayList<String> alts=new ArrayList<>();
+						List<String> ips=plugin.getPlayerData().getIPsByUUID(uuid);
+						List<String> alts=new ArrayList<>();
 
 						PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
 						//FileConfiguration config=plugin.getPlayerConfig(uuid);
@@ -55,8 +56,8 @@ public class StatusExecutor implements CommandExecutor{
 						
 						// only populated alts list if it will be needed
 						if(p.isBanned() || sender.hasPermission("VnllaPlayerInfo.seestatusalt")) {
-							for (String s:ips) {
-								for(String x:plugin.getDB().getUUIDsByIP(s)) {
+							for (String ip:ips) {
+								for(String x:plugin.getPlayerData().getUUIDsByIP(ip)) {
 									String name=plugin.getServer().getOfflinePlayer(UUID.fromString(x)).getName();
 									if(!x.equalsIgnoreCase(uuid)&&!alts.contains(name)) 
 										alts.add(name);

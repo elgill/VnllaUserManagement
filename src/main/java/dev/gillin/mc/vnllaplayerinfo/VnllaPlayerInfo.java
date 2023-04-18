@@ -1,11 +1,13 @@
 package dev.gillin.mc.vnllaplayerinfo;
 
-import dev.gillin.mc.vnllaplayerinfo.Database.Database;
-import dev.gillin.mc.vnllaplayerinfo.Database.SQLite;
+import dev.gillin.mc.vnllaplayerinfo.database.Database;
+import dev.gillin.mc.vnllaplayerinfo.database.PlayerData;
+import dev.gillin.mc.vnllaplayerinfo.database.SQLite;
 import dev.gillin.mc.vnllaplayerinfo.commands.LastLocationExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusIPExecutor;
+import dev.gillin.mc.vnllaplayerinfo.database.SQLiteConnection;
 import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
 import dev.gillin.mc.vnllaplayerinfo.groups.Groups;
 import dev.gillin.mc.vnllaplayerinfo.handlers.VoteHandler;
@@ -39,7 +41,9 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
     private final VnllaPlayerInfo plugin = this;
     private VoteHandler voteHandler;
     private Groups groups;
-    private Database db;
+
+    private SQLiteConnection connection;
+    private PlayerData playerData;
 
     final Logger logger = plugin.getLogger();
 
@@ -73,9 +77,9 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         //initialize data folder
         createPlayerDataDirectory();
 
-        //load db
-        this.db = new SQLite(this);
-        this.db.load();
+        String dbName = getConfig().getString("SQLite.Filename", "defaultname");
+        connection = new SQLiteConnection(dbName, getDataFolder());
+        playerData = new PlayerData(connection);
 
         voteHandler = new VoteHandler();
         groups = new Groups(this);
@@ -94,6 +98,9 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         //log leave times for players on /stop
         for (Player p : playerList) {
             handleLeaving(p.getUniqueId().toString(), false);
+        }
+        if (connection != null) {
+            connection.close();
         }
     }
 
@@ -139,11 +146,11 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                 playerConfigModel.setLastLogin(System.currentTimeMillis());
                 //save changes
                 playerConfigModel.saveConfig(plugin);
-                db.addIp(uuid, ip);
+                playerData.insertPlayerIP(uuid, ip);
 
                 //is one of their alts banned?!
                 ArrayList<OfflinePlayer> banned = new ArrayList<>();
-                for (String uuids : db.getUUIDsByIP(ip)) {
+                for (String uuids : playerData.getUUIDsByIP(ip)) {
                     //if it's their own uuid, then skip to the next one
                     if (uuids.equalsIgnoreCase(uuid))
                         continue;
@@ -246,7 +253,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             return true;
         } else if (command.getName().equalsIgnoreCase("wipeip") && args.length == 1) {
             OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
-            this.db.wipeIP(p.getUniqueId().toString());
+            playerData.deleteIPsByUUID(p.getUniqueId().toString());
             sender.sendMessage(ChatColor.GREEN + "IPs for " + p.getName() + " cleared from the alt detector db!");
             return true;
         }
@@ -334,8 +341,8 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         playerConfigModel.saveConfig(plugin);
     }
 
-    public Database getDB() {
-        return this.db;
+    public PlayerData getPlayerData() {
+        return playerData;
     }
 
     public Groups getGroups() {
