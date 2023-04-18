@@ -8,6 +8,9 @@ import java.util.List;
 public class GroupSerializer {
     public static List<GroupModel> deserializeGroups(ConfigurationSection groupsSection) {
         List<GroupModel> groups = new ArrayList<>();
+        if(groupsSection == null){
+            return groups;
+        }
 
         for (String key : groupsSection.getKeys(false)) {
             String displayName = groupsSection.getString(key + ".displayName");

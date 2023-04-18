@@ -5,6 +5,7 @@ import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
 import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
 import dev.gillin.mc.vnllaplayerinfo.groups.GroupSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,6 +13,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,21 +81,27 @@ public class Groups implements TabExecutor{
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String alias, String[] args) {
 		if(command.getName().equalsIgnoreCase("group")) {
 			// /group ExamplePlayer add mod
 			if(args.length==3) {
 				OfflinePlayer player= CommonUtilities.getOfflinePlayerByString(args[0]);
-				String addOrRemove = args[1].toLowerCase();
+				String addOrRemove = args[1];
 				GroupModel groupModel = getGroupModelByKey(args[2].toLowerCase());
-				if(player == null || groupModel == null){
+				//Only online players for now- should fix this
+				if(!player.isOnline() || groupModel == null){
+					sender.sendMessage(ChatColor.RED + "");
 					return false;
 				}
-				//TODO: Finish this thought
+				if (addOrRemove.equalsIgnoreCase("add")){
+					earnGroup(player.getPlayer(),groupModel);
+					return true;
+				} else if (addOrRemove.equalsIgnoreCase("remove")) {
+					loseGroup(player.getPlayer(),groupModel);
+					return true;
+				}
 
-
-				return false; //TODO: reimplement
-				//return switchGroups(player, group, sender.hasPermission("groups.owner"), plugin.getPlayerConfig(player.getUniqueId().toString()));
+				return false;
 			}
 		}
 		
@@ -181,7 +189,7 @@ public class Groups implements TabExecutor{
 	}*/
 
 	public void earnGroup(Player p, GroupModel groupModel){
-		List<String> perms = groupModel.getPermissions();
+		//List<String> perms = groupModel.getPermissions();
 		//TODO: Grant perms
 		List<String> earnRankCommands = groupModel.getEarnRankCommands();
 		for(String cmd: earnRankCommands){
@@ -190,7 +198,7 @@ public class Groups implements TabExecutor{
 		}
 	}
 	public void loseGroup(Player p, GroupModel groupModel){
-		List<String> perms = groupModel.getPermissions();
+		//List<String> perms = groupModel.getPermissions();
 		//TODO: Revoke perms
 		List<String> loseRankCommands = groupModel.getLoseRankCommands();
 		for(String cmd: loseRankCommands){
