@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupSerializer {
+    private GroupSerializer(){}
+
     public static List<GroupModel> deserializeGroups(ConfigurationSection groupsSection) {
         List<GroupModel> groups = new ArrayList<>();
         if(groupsSection == null){

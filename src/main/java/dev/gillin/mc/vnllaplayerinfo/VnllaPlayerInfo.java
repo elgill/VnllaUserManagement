@@ -139,11 +139,11 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                 playerConfigModel.setLastLogin(System.currentTimeMillis());
                 //save changes
                 playerConfigModel.saveConfig(plugin);
-                db.insertTokens(uuid, ip);
+                db.addIp(uuid, ip);
 
                 //is one of their alts banned?!
                 ArrayList<OfflinePlayer> banned = new ArrayList<>();
-                for (String uuids : db.getUUIDssByIP(ip)) {
+                for (String uuids : db.getUUIDsByIP(ip)) {
                     //if it's their own uuid, then skip to the next one
                     if (uuids.equalsIgnoreCase(uuid))
                         continue;

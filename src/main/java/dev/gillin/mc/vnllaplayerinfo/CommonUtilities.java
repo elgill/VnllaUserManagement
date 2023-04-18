@@ -59,7 +59,7 @@ public class CommonUtilities {
         if(CommonUtilities.isValidUUID(playerInputted)){
             player = Bukkit.getOfflinePlayer(UUID.fromString(playerInputted));
         } else {
-            // Deprecated, but no good replacement TODO: Ensure this is still true
+            // Deprecated, but no good replacement as of now
             player = Bukkit.getOfflinePlayer(playerInputted);
         }
         return player;

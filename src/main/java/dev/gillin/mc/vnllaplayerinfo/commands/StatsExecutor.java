@@ -3,14 +3,11 @@ package dev.gillin.mc.vnllaplayerinfo.commands;
 import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
 import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
 import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
@@ -27,8 +24,6 @@ public class StatsExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String[] args) {
         if(command.getName().equalsIgnoreCase("stats")) {
-            if(args.length==0) {
-
                 if(sender instanceof Player) {
                     new BukkitRunnable() {
                         @Override
@@ -53,10 +48,11 @@ public class StatsExecutor implements CommandExecutor {
                         }
                     }.runTaskAsynchronously(plugin);
                 }
-                else
+                else {
                     sender.sendMessage(ChatColor.RED+"Ur not a player!");
+                }
                 return true;
-            }
+
         }
         return false;
     }

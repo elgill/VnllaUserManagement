@@ -9,13 +9,11 @@ import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.UUID;
 
 public class StatusExecutor implements CommandExecutor{
@@ -58,7 +56,7 @@ public class StatusExecutor implements CommandExecutor{
 						// only populated alts list if it will be needed
 						if(p.isBanned() || sender.hasPermission("VnllaPlayerInfo.seestatusalt")) {
 							for (String s:ips) {
-								for(String x:plugin.getDB().getUUIDssByIP(s)) {
+								for(String x:plugin.getDB().getUUIDsByIP(s)) {
 									String name=plugin.getServer().getOfflinePlayer(UUID.fromString(x)).getName();
 									if(!x.equalsIgnoreCase(uuid)&&!alts.contains(name)) 
 										alts.add(name);

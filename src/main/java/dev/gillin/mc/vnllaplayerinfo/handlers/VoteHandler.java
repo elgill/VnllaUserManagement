@@ -46,19 +46,12 @@ public class VoteHandler {
 
         playerConfigModel.saveConfig(plugin);
 
+        /* These are messages if we want to add back expiration messages
+        p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip1remain + ChatColor.DARK_GREEN +
+                " more votes to earn VIP, and " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes for VIP2.");
+        p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes to VIP2.");
 
-        /*try { TODO:Determine if we want this
-            if (true/* !plugin.isStaff(config) TODO: fix ) {
-                int vip2remain = plugin.getConfig().getInt("votes.vip2") - vip2;
-                int vip1remain = plugin.getConfig().getInt("votes.vip1") - vip1;
-                if (rank.equals("default")) {
-                    p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip1remain + ChatColor.DARK_GREEN + " more votes to earn VIP, and " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes for VIP2.");
-                } else if (rank.equals("vip")) {
-                    p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes to VIP2.");
-                }
-            }
-        } catch (Exception e) {
-            plugin.broadcastOPs("Error sending remaining votes message to " + p.getName());
-        }*/
+        END BLOCK*/
+
     }
 }

@@ -68,7 +68,7 @@ public abstract class Database {
         return ips;
     }
     
-    public ArrayList<String> getUUIDssByIP(String string) {
+    public ArrayList<String> getUUIDsByIP(String string) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs;
@@ -79,9 +79,7 @@ public abstract class Database {
    
             rs = ps.executeQuery();
             while(rs.next()){
-                //if(rs.getString("uuid").equalsIgnoreCase(string.toLowerCase())){
-                    uuids.add(rs.getString("uuid"));
-                //}
+                uuids.add(rs.getString("uuid"));
             }
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
@@ -98,8 +96,8 @@ public abstract class Database {
         return uuids;
     }
 
-// Now we need methods to save things to the database
-    public void insertTokens(String uuid, String ip) {
+    // Now we need methods to save things to the database
+    public void addIp(String uuid, String ip) {
         Connection conn = null;
         PreparedStatement ps = null;
         try {

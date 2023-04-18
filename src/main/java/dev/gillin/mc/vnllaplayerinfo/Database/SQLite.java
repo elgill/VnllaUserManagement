@@ -18,10 +18,10 @@ public class SQLite extends Database {
         super(instance);
         dbname = plugin.getConfig().getString("SQLite.Filename", "defaultname");
     }
-    public String SQLiteCreateTokensTable="CREATE TABLE IF NOT EXISTS 'players' (" + 
-    		"	'uuid' VARCHAR(32) NOT NULL," + 
-    		"	'ip' VARCHAR(15) NOT NULL" + 
-    		");";
+    public static final String SQLiteCreateTokensTable = "CREATE TABLE IF NOT EXISTS players (" +
+            "uuid VARCHAR(32) NOT NULL," +
+            "ip VARCHAR(15) NOT NULL" +
+            ");";
 
     // SQL creation stuff, You can leave the blow stuff untouched.
     public Connection getSQLConnection() {
@@ -30,13 +30,10 @@ public class SQLite extends Database {
             try {
                 dataFolder.createNewFile();
             } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, "File write error: "+dbname+".db");
+                plugin.getLogger().log(Level.SEVERE, "File write error: {0}.db", dbname);
             }
         }
         try {
-            /*if(connection!=null&&!connection.isClosed()){
-                return connection;
-            }*/
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
             return connection;
