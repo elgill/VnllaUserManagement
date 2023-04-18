@@ -25,15 +25,14 @@ public class SQLiteConnection {
             try {
                 dbFile.createNewFile();
             } catch (IOException e) {
-                // Log the error (replace "plugin" with your plugin instance)
-                Bukkit.getLogger().log(Level.SEVERE, "File write error: " + dbName + ".db");
+                Bukkit.getLogger().log(Level.SEVERE, "File write error: {0}.db", dbName);
             }
         }
 
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:sqlite:" + dbFile);
         config.setDriverClassName("org.sqlite.JDBC");
-        config.setMaximumPoolSize(10); // Adjust the pool size based on your needs
+        config.setMaximumPoolSize(10);
         config.setConnectionTestQuery("SELECT 1");
         config.setPoolName("SQLitePool");
 

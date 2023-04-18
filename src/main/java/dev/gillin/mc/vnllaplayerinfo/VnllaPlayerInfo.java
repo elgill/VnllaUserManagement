@@ -1,12 +1,10 @@
 package dev.gillin.mc.vnllaplayerinfo;
 
-import dev.gillin.mc.vnllaplayerinfo.database.Database;
-import dev.gillin.mc.vnllaplayerinfo.database.PlayerData;
-import dev.gillin.mc.vnllaplayerinfo.database.SQLite;
 import dev.gillin.mc.vnllaplayerinfo.commands.LastLocationExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusExecutor;
 import dev.gillin.mc.vnllaplayerinfo.commands.StatusIPExecutor;
+import dev.gillin.mc.vnllaplayerinfo.database.PlayerData;
 import dev.gillin.mc.vnllaplayerinfo.database.SQLiteConnection;
 import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
 import dev.gillin.mc.vnllaplayerinfo.groups.Groups;

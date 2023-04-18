@@ -28,7 +28,6 @@ public class PlayerData {
              PreparedStatement statement = conn.prepareStatement(createTableSQL)) {
             statement.execute();
         } catch (SQLException e) {
-            // Log the error (replace "plugin" with your plugin instance)
             Bukkit.getLogger().log(Level.SEVERE, "Error creating table", e);
         }
     }
@@ -43,7 +42,6 @@ public class PlayerData {
             statement.setString(2, ip);
             statement.executeUpdate();
         } catch (SQLException e) {
-            // Log the error (replace "plugin" with your plugin instance)
             Bukkit.getLogger().log(Level.SEVERE, "Error inserting player IP", e);
         }
     }
@@ -61,7 +59,6 @@ public class PlayerData {
                 ips.add(rs.getString("ip"));
             }
         } catch (SQLException e) {
-            // Log the error (replace "plugin" with your plugin instance)
             Bukkit.getLogger().log(Level.SEVERE, "Error getting IPs by UUID", e);
         }
 
@@ -81,7 +78,6 @@ public class PlayerData {
                 uuids.add(rs.getString("uuid"));
             }
         } catch (SQLException e) {
-            // Log the error (replace "plugin" with your plugin instance)
             Bukkit.getLogger().log(Level.SEVERE, "Error getting UUIDs by IP", e);
         }
 
@@ -97,7 +93,6 @@ public class PlayerData {
             statement.setString(1, uuid);
             statement.executeUpdate();
         } catch (SQLException e) {
-            // Log the error (replace "plugin" with your plugin instance)
             Bukkit.getLogger().log(Level.SEVERE, "Error deleting IPs by UUID", e);
         }
     }
