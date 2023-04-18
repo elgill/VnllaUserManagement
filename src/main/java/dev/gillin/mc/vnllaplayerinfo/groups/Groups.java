@@ -1,5 +1,6 @@
 package dev.gillin.mc.vnllaplayerinfo.groups;
 
+import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
 import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
 import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
 import dev.gillin.mc.vnllaplayerinfo.groups.GroupSerializer;
@@ -50,10 +51,17 @@ public class Groups implements TabExecutor{
         	}
             StringUtil.copyPartialMatches(args[0], possibles, completions);
         } else if (args.length == 2) {
+			possibles.add("add");
+			possibles.add("remove");
+			StringUtil.copyPartialMatches(args[1], possibles, completions);
+		} else if (args.length == 3) {
 			for(GroupModel groupModel:getGroupModels()){
-				possibles.add(groupModel.getDisplayName());
+				if(!groupModel.isVoteAchievable()){
+					possibles.add(groupModel.getGroupKey());
+				}
+
 			}
-            StringUtil.copyPartialMatches(args[1], possibles, completions);
+            StringUtil.copyPartialMatches(args[2], possibles, completions);
         }
 
         Collections.sort(completions);
@@ -73,9 +81,17 @@ public class Groups implements TabExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
 		if(command.getName().equalsIgnoreCase("group")) {
-			if(args.length==2) {
-				String group=args[1].toLowerCase();
-				OfflinePlayer player=Bukkit.getOfflinePlayer(args[0]);
+			// /group ExamplePlayer add mod
+			if(args.length==3) {
+				OfflinePlayer player= CommonUtilities.getOfflinePlayerByString(args[0]);
+				String addOrRemove = args[1].toLowerCase();
+				GroupModel groupModel = getGroupModelByKey(args[2].toLowerCase());
+				if(player == null || groupModel == null){
+					return false;
+				}
+				//TODO: Finish this thought
+
+
 				return false; //TODO: reimplement
 				//return switchGroups(player, group, sender.hasPermission("groups.owner"), plugin.getPlayerConfig(player.getUniqueId().toString()));
 			}
