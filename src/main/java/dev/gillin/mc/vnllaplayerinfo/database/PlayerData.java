@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class PlayerData {
-    private SQLiteConnection connection;
+    private final SQLiteConnection connection;
 
     public PlayerData(SQLiteConnection connection) {
         this.connection = connection;

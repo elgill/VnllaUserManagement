@@ -225,29 +225,12 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
             return true;
         } else if (command.getName().equalsIgnoreCase("donor") && args.length == 1) {
             //TODO: reimplement this
-            /*OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
-            FileConfiguration config = plugin.getPlayerConfig(p.getUniqueId().toString());
-            config.set("votes.rank", "vip2");
-            long vip2 = config.getLong("votes.vip2expire");
-            if (vip2 < System.currentTimeMillis())
-                vip2 = System.currentTimeMillis() + getConfig().getLong("votes.keeprank") * 1000;
-            else
-                vip2 += getConfig().getLong("votes.keeprank") * 1000;
-            getServer().broadcastMessage(p.getName() + " has made the advancement " + ChatColor.GREEN + "[DONOR!]");
-            getServer().dispatchCommand(getServer().getConsoleSender(), "lp user " + p.getName() + " parent removetemp vip2");
-            getServer().dispatchCommand(getServer().getConsoleSender(), "lp user " + p.getName() + " parent addtemp vip2 " + vip2 / 1000 + " replace");
-            config.set("votes.vip2expire", vip2);
-            if (!isStaff(config))
-                config.set(GROUP, "vip2");
-            config.set("votes.forgeitem", config.getInt("votes.forgeitem") + 1);
-            this.savePlayerConfig(config, p.getUniqueId().toString());*/
+            //I think this will be removed
             return true;
         } else if (command.getName().equalsIgnoreCase("forgegiven") && args.length == 1) {
             //TODO: figure this out
-            /*OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
-            FileConfiguration config = plugin.getPlayerConfig(p.getUniqueId().toString());
-            config.set("votes.forgeitem", config.getInt("votes.forgeitem") - 1);
-            this.savePlayerConfig(config, p.getUniqueId().toString());*/
+            //Unless I make a custom command config file- it's getting removed
+            //I don't think it's possible
             return true;
         } else if (command.getName().equalsIgnoreCase("wipeip") && args.length == 1) {
             OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
@@ -277,7 +260,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                 command.setTabCompleter((TabCompleter) executor);
             }
         } else {
-            getLogger().warning("The '" + commandName + "' command was not found. Please check your plugin.yml file.");
+            getLogger().log(Level.WARNING,"The \'{0}\' command was not found. Please check your plugin.yml file.", commandName);
         }
     }
 
