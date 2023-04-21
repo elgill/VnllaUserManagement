@@ -23,8 +23,16 @@ public class GroupSerializer {
             List<String> permissions = groupsSection.getStringList(key + ".permissions");
             boolean voteAchievable = groupsSection.getBoolean(key + ".voteAchievable", true); // Default to true
 
-            GroupModel group = new GroupModel(key, displayName, votesRequired, rankLength, earnRankCommands, loseRankCommands, voteAchievable, permissions);
-            groups.add(group);
+            GroupModel groupModel = new GroupModel(key);
+            groupModel.setDisplayName(displayName);
+            groupModel.setVotesRequired(votesRequired);
+            groupModel.setRankLength(rankLength);
+            groupModel.setEarnRankCommands(earnRankCommands);
+            groupModel.setLoseRankCommands(loseRankCommands);
+            groupModel.setVoteAchievable(voteAchievable);
+            groupModel.setPermissions(permissions);
+
+            groups.add(groupModel);
         }
 
         return groups;

@@ -21,12 +21,13 @@ public class SQLiteConnection {
     private void setupDataSource(String dbName, File dataFolder) {
         File dbFile = Paths.get(dataFolder.getAbsolutePath(), dbName + ".db").toFile();
 
-        if (!dbFile.exists()) {
-            try {
-                dbFile.createNewFile();
-            } catch (IOException e) {
-                Bukkit.getLogger().log(Level.SEVERE, "File write error: {0}.db", dbName);
+
+        try {
+            if(dbFile.createNewFile()){
+                Bukkit.getLogger().log(Level.INFO, "Creating new DB file {0}", dbFile.getAbsolutePath());
             }
+        } catch (IOException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "File write error: {0}.db", dbName);
         }
 
         HikariConfig config = new HikariConfig();

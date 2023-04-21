@@ -17,6 +17,8 @@ public class ServerConfigModel {
 
             #List lowest to highest ranks
     groups:*/
+
+    //TODO: Do this
     private List<String> voteCommands;
 
 

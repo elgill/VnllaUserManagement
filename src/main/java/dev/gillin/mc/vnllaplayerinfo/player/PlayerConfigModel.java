@@ -3,14 +3,11 @@ package dev.gillin.mc.vnllaplayerinfo.player;
 import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,11 +19,6 @@ import static dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo.GROUP;
 public class PlayerConfigModel {
     private String playerId;
     private int totalVotes;
-    private int vip1Votes;
-    private int vip2Votes;
-    private String rank;
-    private long vip1Expire;
-    private long vip2Expire;
     private int votesOwed; //votes.owed
     private long lastLogin; //playtime.lastLogin
     private long lastLogout; //playtime.lastLogout
@@ -39,8 +31,7 @@ public class PlayerConfigModel {
     private List<String> ipAddresses;
     private List<String> groups;
     private FileConfiguration config;
-    private HashMap<String, GroupInfo> groupInfos;
-
+    private Map<String, GroupInfo> groupInfos;
     static final Logger logger = Bukkit.getLogger();
 
     public String getPlayerId() {
@@ -148,11 +139,11 @@ public class PlayerConfigModel {
         this.ipAddresses = ipAddresses;
     }
 
-    public HashMap<String, GroupInfo> getGroupInfos() {
+    public Map<String, GroupInfo> getGroupInfos() {
         return groupInfos;
     }
 
-    public void setGroupInfos(HashMap<String, GroupInfo> groupInfos) {
+    public void setGroupInfos(Map<String, GroupInfo> groupInfos) {
         this.groupInfos = groupInfos;
     }
 
@@ -195,6 +186,7 @@ public class PlayerConfigModel {
     //save changes in config file
     public boolean saveConfig(VnllaPlayerInfo plugin) {
         try {
+            //TODO: Move these to static constant variables
             config.set("votes.totalVotes", getTotalVotes());
             config.set("votes.owed",getVotesOwed());
             config.set("groups", getGroups());

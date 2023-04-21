@@ -2,15 +2,12 @@ package dev.gillin.mc.vnllaplayerinfo.groups;
 
 import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
 import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
-import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
-import dev.gillin.mc.vnllaplayerinfo.groups.GroupSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -197,7 +194,7 @@ public class Groups implements TabExecutor{
 		//TODO: Grant perms
 		List<String> earnRankCommands = groupModel.getEarnRankCommands();
 		for(String cmd: earnRankCommands){
-			cmd.replaceAll("%PLAYER%", p.getName());
+			cmd = cmd.replace("%PLAYER%", p.getName());
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
 		}
 	}
@@ -206,7 +203,7 @@ public class Groups implements TabExecutor{
 		//TODO: Revoke perms
 		List<String> loseRankCommands = groupModel.getLoseRankCommands();
 		for(String cmd: loseRankCommands){
-			cmd.replaceAll("%PLAYER%", p.getName());
+			cmd = cmd.replace("%PLAYER%", p.getName());
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
 		}
 	}

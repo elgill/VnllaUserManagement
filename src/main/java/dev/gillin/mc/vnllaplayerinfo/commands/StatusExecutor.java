@@ -41,7 +41,6 @@ public class StatusExecutor implements CommandExecutor{
 						List<String> alts=new ArrayList<>();
 
 						PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
-						//FileConfiguration config=plugin.getPlayerConfig(uuid);
 
 						//TODO: move to server config
 						Scoreboard main=Bukkit.getScoreboardManager().getMainScoreboard();

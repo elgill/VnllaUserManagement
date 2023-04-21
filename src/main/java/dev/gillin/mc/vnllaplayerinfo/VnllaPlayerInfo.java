@@ -285,9 +285,10 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
 
     public void checkLoseGroup(Player p, PlayerConfigModel playerConfigModel) {
         long currentTime = System.currentTimeMillis();
-        HashMap<String, GroupInfo> groupInfoMap = playerConfigModel.getGroupInfos();
-        for(String groupInfoKey: groupInfoMap.keySet()){
-            GroupInfo groupInfo = groupInfoMap.get(groupInfoKey);
+        Map<String, GroupInfo> groupInfoMap = playerConfigModel.getGroupInfos();
+        for(Map.Entry<String, GroupInfo> groupInfoEntry: groupInfoMap.entrySet()){
+            String groupInfoKey = groupInfoEntry.getKey();
+            GroupInfo groupInfo = groupInfoEntry.getValue();
             if(groupInfo.isActive() && groupInfo.getExpiration() < currentTime){
                 groupInfo.setActive(false);
                 GroupModel groupModel = groups.getGroupModelByKey(groupInfoKey);

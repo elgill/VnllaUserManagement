@@ -8,7 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
+import java.util.Map;
 
 
 public class VoteHandler {
@@ -22,7 +22,7 @@ public class VoteHandler {
 
         playerConfigModel.setTotalVotes(playerConfigModel.getTotalVotes() + numVotes);
 
-        HashMap<String, GroupInfo> groupInfoHashMap = playerConfigModel.getGroupInfos();
+        Map<String, GroupInfo> groupInfoHashMap = playerConfigModel.getGroupInfos();
         for(GroupModel groupModel: plugin.getGroups().getVoteGroupModels()){
             GroupInfo groupInfo;
             if(groupModel.getVotesRequired() <= 0){
@@ -48,13 +48,11 @@ public class VoteHandler {
         }
 
         playerConfigModel.saveConfig(plugin);
-
-        /* These are messages if we want to add back expiration messages
-        p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip1remain + ChatColor.DARK_GREEN +
-                " more votes to earn VIP, and " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes for VIP2.");
-        p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes to VIP2.");
-
-        END BLOCK*/
+        /*
+            These are messages if we want to add back expiration messages
+            Two remain: p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip1remain + ChatColor.DARK_GREEN +" more votes to earn VIP, and " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes for VIP2.");
+            One Remain: p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes to VIP2.");
+        */
 
     }
 }

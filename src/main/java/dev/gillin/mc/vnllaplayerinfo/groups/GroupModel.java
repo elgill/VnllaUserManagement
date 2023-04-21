@@ -12,15 +12,8 @@ public class GroupModel {
     private boolean voteAchievable;
     private List<String> permissions;
 
-    public GroupModel(String groupKey, String displayName, int votesRequired, long rankLength, List<String> earnRankCommands, List<String> loseRankCommands, boolean voteAchievable, List<String> permissions) {
+    public GroupModel(String groupKey){
         this.groupKey = groupKey;
-        this.displayName = displayName;
-        this.votesRequired = votesRequired;
-        this.rankLength = rankLength;
-        this.earnRankCommands = earnRankCommands;
-        this.loseRankCommands = loseRankCommands;
-        this.voteAchievable = voteAchievable;
-        this.permissions = permissions;
     }
 
     public String getGroupKey() {
@@ -87,9 +80,6 @@ public class GroupModel {
         return permissions;
     }
 
-    public void setGrantedPermissions(List<String> permissions) {
-        this.permissions = permissions;
-    }
 
     @Override
     public String toString() {
