@@ -1,22 +1,22 @@
-package dev.gillin.mc.vnllaplayerinfo.commands;
+package dev.gillin.mc.vnllausermanagement.commands;
 
-import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
-import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
+import dev.gillin.mc.vnllausermanagement.CommonUtilities;
+import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
+import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Level;
 
 public class LastLocationExecutor implements CommandExecutor {
-    private final VnllaPlayerInfo plugin;
+    private final VnllaUserManagement plugin;
 
-    public LastLocationExecutor(VnllaPlayerInfo plugin) {
+    public LastLocationExecutor(VnllaUserManagement plugin) {
         this.plugin = plugin;
     }
     @Override
@@ -29,12 +29,13 @@ public class LastLocationExecutor implements CommandExecutor {
                 return false;
             }
             //get location and tp player to it
-            FileConfiguration config = plugin.getPlayerConfig(uuid);
-            if (!config.isSet("lastlocation")) {
+            PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin,uuid);
+            if (playerConfigModel.getLastLocationWorld() == null) {
                 sender.sendMessage(ChatColor.GREEN + "This is the player's first session so they don't have one :)");
                 return true;
             }
-            Location loc = new Location(Bukkit.getWorld(config.getString("lastlocation.world")), config.getDouble("lastlocation.x"), config.getDouble("lastlocation.y"), config.getDouble("lastlocation.z"));
+            Location loc = new Location(Bukkit.getWorld(playerConfigModel.getLastLocationWorld()),
+                    playerConfigModel.getLastLocationX(), playerConfigModel.getLastLocationY(), playerConfigModel.getLastLocationZ());
             plugin.getServer().getPlayer(sender.getName()).teleport(loc);
 
             return true;

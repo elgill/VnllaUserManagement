@@ -1,6 +1,6 @@
-package dev.gillin.mc.vnllaplayerinfo.commands;
+package dev.gillin.mc.vnllausermanagement.commands;
 
-import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
+import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class StatusIPExecutor implements CommandExecutor {
-    private final VnllaPlayerInfo plugin;
+    private final VnllaUserManagement plugin;
 
-    public StatusIPExecutor(VnllaPlayerInfo plugin) {
+    public StatusIPExecutor(VnllaUserManagement plugin) {
         this.plugin = plugin;
     }
 
@@ -29,7 +29,7 @@ public class StatusIPExecutor implements CommandExecutor {
                 public void run() {
                     sender.sendMessage(ChatColor.LIGHT_PURPLE+"IP: "+ChatColor.WHITE+args[0]);
                     ArrayList<String> ign=new ArrayList<>();
-                    for(String s:plugin.getDB().getUUIDssByIP(args[0])) {
+                    for(String s:plugin.getPlayerData().getUUIDsByIP(args[0])) {
                         ign.add(Bukkit.getOfflinePlayer(UUID.fromString(s)).getName());
                     }
                     sender.sendMessage(ChatColor.LIGHT_PURPLE+"Accounts: "+ChatColor.WHITE+ ign);

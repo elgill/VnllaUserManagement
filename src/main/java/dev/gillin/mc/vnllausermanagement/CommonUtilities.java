@@ -1,4 +1,9 @@
-package dev.gillin.mc.vnllaplayerinfo;
+package dev.gillin.mc.vnllausermanagement;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+
+import java.util.UUID;
 
 public class CommonUtilities {
     private CommonUtilities() {
@@ -15,7 +20,7 @@ public class CommonUtilities {
         if (len > 36) {
             return false;
         }
-        int dash1 = uuid.indexOf('-', 0);
+        int dash1 = uuid.indexOf('-');
         int dash2 = uuid.indexOf('-', dash1 + 1);
         int dash3 = uuid.indexOf('-', dash2 + 1);
         int dash4 = uuid.indexOf('-', dash3 + 1);
@@ -46,6 +51,18 @@ public class CommonUtilities {
         else {
             return (t / (3600 * 24)) + " day(s)";
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static OfflinePlayer getOfflinePlayerByString(String playerInputted){
+        OfflinePlayer player;
+        if(CommonUtilities.isValidUUID(playerInputted)){
+            player = Bukkit.getOfflinePlayer(UUID.fromString(playerInputted));
+        } else {
+            // Deprecated, but no good replacement as of now
+            player = Bukkit.getOfflinePlayer(playerInputted);
+        }
+        return player;
     }
 
 }

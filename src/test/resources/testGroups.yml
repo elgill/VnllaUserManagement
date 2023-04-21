@@ -1,0 +1,32 @@
+groups:
+  vip1:
+    displayName: "VIP"
+    votesRequired: 100
+    rankLength: 2592000
+    earnRankCommands:
+      - "lp user %player% parent addtemp vip %time%"
+    loseRankCommands:
+      - "lp user %player% parent removetemp vip"
+    permissions:
+      - some.permission.vip
+    voteAchievable: true
+  vip2:
+    displayName: "vip2"
+    votesRequired: 0
+    rankLength: 2592000
+    earnRankCommands: []
+    loseRankCommands: []
+    permissions:
+      - some.permission.vip2
+    voteAchievable: true
+  donor:
+    displayName: "Donor"
+    votesRequired: 0
+    rankLength: 2592000
+    earnRankCommands:
+      - "lp user %player% parent addtemp donor %time%"
+    loseRankCommands:
+      - "lp user %player% parent removetemp donor"
+    permissions:
+      - some.permission.donor
+    voteAchievable: false
