@@ -90,4 +90,18 @@ public class GroupModel {
     public void setGrantedPermissions(List<String> permissions) {
         this.permissions = permissions;
     }
+
+    @Override
+    public String toString() {
+        return "GroupModel{" +
+                "groupKey='" + groupKey + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", votesRequired=" + votesRequired +
+                ", rankLength=" + rankLength +
+                ", earnRankCommands=" + earnRankCommands +
+                ", loseRankCommands=" + loseRankCommands +
+                ", voteAchievable=" + voteAchievable +
+                ", permissions=" + permissions +
+                '}';
+    }
 }

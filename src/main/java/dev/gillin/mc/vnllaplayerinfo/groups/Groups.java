@@ -16,9 +16,9 @@ import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Groups implements TabExecutor{
 	private final VnllaPlayerInfo plugin;
@@ -27,11 +27,15 @@ public class Groups implements TabExecutor{
 
 	public Groups(VnllaPlayerInfo p) {
 		plugin=p;
+		Bukkit.getLogger().log(Level.INFO,"Parsing GroupModels... ");
 		groupModels = GroupSerializer.deserializeGroups(p.getConfig().getConfigurationSection("groups"));
 		voteGroupModels= new ArrayList<>();
 		for(GroupModel groupModel: groupModels){
 			if(groupModel.isVoteAchievable()){
+				Bukkit.getLogger().log(Level.INFO,"Vote Achievable GroupModel: {0}",groupModel);
 				voteGroupModels.add(groupModel);
+			} else {
+				Bukkit.getLogger().log(Level.INFO,"Non Vote Achievable GroupModel: {0}",groupModel);
 			}
 		}
 	}

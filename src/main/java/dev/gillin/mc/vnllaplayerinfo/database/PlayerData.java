@@ -22,7 +22,8 @@ public class PlayerData {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS players (" +
                 "uuid VARCHAR(32) NOT NULL," +
                 "ip VARCHAR(15) NOT NULL" +
-                ");";
+                ");" +
+                "CREATE INDEX IF NOT EXISTS 'ip_index' ON 'players' ('ip');";
 
         try (Connection conn = connection.getConnection();
              PreparedStatement statement = conn.prepareStatement(createTableSQL)) {

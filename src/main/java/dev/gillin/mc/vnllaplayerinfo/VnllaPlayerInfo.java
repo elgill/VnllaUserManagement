@@ -64,23 +64,18 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         registerCommand("donor", this);
         registerCommand("wipeip", this);
 
-        //TODO: Break this off into different plugin
-        TabExecutor forge = new Forge(this);
-        registerCommand(FORGE, forge);
-
         groups = new Groups(this);
         registerCommand(GROUP, groups);
-
 
         //initialize data folder
         createPlayerDataDirectory();
 
-        String dbName = getConfig().getString("SQLite.Filename", "defaultname");
+        //TODO Test This-file name doesnt work
+        String dbName = getConfig().getString("sqlite.filename", "defaultsqlfilename");
         connection = new SQLiteConnection(dbName, getDataFolder());
         playerData = new PlayerData(connection);
 
         voteHandler = new VoteHandler();
-        groups = new Groups(this);
 
         //set all players as logged in
         for (Player p : getServer().getOnlinePlayers()) {
@@ -105,98 +100,109 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        //all off of main thread
-        String uuid = event.getPlayer().getUniqueId().toString();
-        PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin, uuid);
-        if (playerConfigModel.getVotesOwed() > 0) {
-            plugin.giveVote(event.getPlayer(), playerConfigModel, playerConfigModel.getVotesOwed());
-            playerConfigModel.setVotesOwed(0);
+        Player joiningPlayer = event.getPlayer();
+        String uuid = joiningPlayer.getUniqueId().toString();
+        PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
 
-            playerConfigModel.saveConfig(plugin);
-        }
+        handleVotesOwed(joiningPlayer, playerConfigModel);
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                String ip;
-                String name = event.getPlayer().getName();
-                String uuid = event.getPlayer().getUniqueId().toString();
-                //trim to ip from e.g. /127.0.0.1:32673
-                try {
-                    ip = event.getPlayer().spigot().getRawAddress().toString();
-                    ip = ip.substring(ip.indexOf('/') + 1, ip.indexOf(':'));
-                } catch (StringIndexOutOfBoundsException e) {
-                    ip = "ERROR";
-                    logger.log(Level.SEVERE, "Failed to Parse IP", e);
-                }
-
-                //save player data for joining player
-                PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin,uuid);
-
-                //lose vip if applicable
-                plugin.checkLoseGroup(event.getPlayer(), playerConfigModel);
-
-                playerConfigModel.setLastPlayerName(name);
-                List<String> ips = playerConfigModel.getIpAddresses();
-                if (!ips.contains(ip)) {
-                    ips.add(ip);
-                }
-                playerConfigModel.setLastLogin(System.currentTimeMillis());
-                //save changes
-                playerConfigModel.saveConfig(plugin);
+                String ip = getPlayerIp(joiningPlayer);
+                updatePlayerConfigModel(ip, joiningPlayer, playerConfigModel);
                 playerData.insertPlayerIP(uuid, ip);
 
                 //is one of their alts banned?!
-                ArrayList<OfflinePlayer> banned = new ArrayList<>();
-                for (String uuids : playerData.getUUIDsByIP(ip)) {
-                    //if it's their own uuid, then skip to the next one
-                    if (uuids.equalsIgnoreCase(uuid))
-                        continue;
-                    OfflinePlayer p = getServer().getOfflinePlayer(UUID.fromString(uuids));
-                    if (p.isBanned()) {
-                        banned.add(p);
-                    }
-                }
+                List<OfflinePlayer> banned = getBannedAlts(ip, uuid);
 
-                //tell all op players about their misdeeds
-                for (Player player : getServer().getOnlinePlayers()) {
-                    if (player.isOp()) {
-                        for (OfflinePlayer p : banned) {
-                            String playerName=p.getName();
-                            String reason="";
-                            if(playerName != null){
-                                 BanEntry banEntry = getServer().getBanList(Type.NAME).getBanEntry(playerName);
-                                 if(banEntry != null){
-                                    reason = banEntry.getReason();
-                                 }
-                                 else{
-                                     logger.log(Level.SEVERE, "No Ban entry found for Player: {0}", playerName);
-                                 }
-                            }
-
-                            ClickEvent banPlay = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-                                    String.format("/ban %s Alt of banned player: %s. Banned for %s", name, p.getName(), reason));
-                            String[] strings = {p.getName(), " was banned for: ", reason};
-                            net.md_5.bungee.api.ChatColor[] colors = {net.md_5.bungee.api.ChatColor.DARK_RED,
-                                    net.md_5.bungee.api.ChatColor.RED, net.md_5.bungee.api.ChatColor.YELLOW};
-
-                            TextComponent[] textComponents = new TextComponent[strings.length];
-                            for (int x = 0; x < textComponents.length; x++) {
-                                textComponents[x] = new TextComponent(strings[x]);
-                                textComponents[x].setClickEvent(banPlay);
-                                textComponents[x].setColor(colors[x]);
-                            }
-
-
-                            player.sendMessage(ChatColor.YELLOW + name + ChatColor.RED + " is an alt of banned player(s): " + ChatColor.DARK_RED + p.getName());
-                            player.spigot().sendMessage(textComponents);
-                        }
-                    }
-                }
-
-
+                sendAltWarning(banned, joiningPlayer);
             }
         }.runTaskAsynchronously(plugin);
+    }
+
+    private void sendAltWarning(List<OfflinePlayer> banned, Player joiningPlayer) {
+        for (OfflinePlayer bannedPlayer : banned) {
+            String playerName = bannedPlayer.getName();
+
+            if (playerName == null) {
+                logger.log(Level.SEVERE, "Banned player name is null");
+                return;
+            }
+            BanEntry banEntry = getServer().getBanList(Type.NAME).getBanEntry(playerName);
+            if (banEntry == null) {
+                logger.log(Level.SEVERE, "No Ban entry found for Player: {0}", playerName);
+                return;
+            }
+
+            String reason = banEntry.getReason();
+
+            ClickEvent banPlay = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+                    String.format("/ban %s Alt of banned player: %s. Banned for %s",
+                            joiningPlayer.getName(), bannedPlayer.getName(), reason));
+            String[] strings = {bannedPlayer.getName(), " was banned for: ", reason};
+            net.md_5.bungee.api.ChatColor[] colors = {net.md_5.bungee.api.ChatColor.DARK_RED,
+                    net.md_5.bungee.api.ChatColor.RED, net.md_5.bungee.api.ChatColor.YELLOW};
+
+            TextComponent[] textComponents = new TextComponent[strings.length];
+            for (int x = 0; x < textComponents.length; x++) {
+                textComponents[x] = new TextComponent(strings[x]);
+                textComponents[x].setClickEvent(banPlay);
+                textComponents[x].setColor(colors[x]);
+            }
+
+            Bukkit.getLogger().log(Level.WARNING, () -> String.format("%s is an alt of banned player(s): %s",
+                    joiningPlayer.getName(), bannedPlayer.getName()));
+
+            Bukkit.getLogger().log(Level.INFO, () -> String.format("%s was banned for: %s",
+                    bannedPlayer.getName(), reason));
+
+            for (Player player : getServer().getOnlinePlayers()) {
+                if (player.isOp()) {
+                    player.sendMessage(ChatColor.YELLOW + joiningPlayer.getName() + ChatColor.RED +
+                            " is an alt of banned player(s): " + ChatColor.DARK_RED + bannedPlayer.getName());
+                    player.spigot().sendMessage(textComponents);
+                }
+            }
+        }
+
+    }
+
+    private void updatePlayerConfigModel(String ip, Player joiningPlayer, PlayerConfigModel playerConfigModel) {
+        String name = joiningPlayer.getName();
+
+        //lose vip if applicable
+        plugin.checkLoseGroup(joiningPlayer, playerConfigModel);
+
+        playerConfigModel.setLastPlayerName(name);
+        List<String> ips = playerConfigModel.getIpAddresses();
+        if (!ips.contains(ip)) {
+            ips.add(ip);
+        }
+        playerConfigModel.setLastLogin(System.currentTimeMillis());
+        //save changes
+        playerConfigModel.saveConfig(plugin);
+    }
+
+    private void handleVotesOwed(Player joiningPlayer, PlayerConfigModel playerConfigModel) {
+        if (playerConfigModel.getVotesOwed() > 0) {
+            Bukkit.getLogger().log(Level.FINE, "Applying Votes owed to {0}", joiningPlayer.getName());
+            plugin.giveVote(joiningPlayer, playerConfigModel, playerConfigModel.getVotesOwed());
+            playerConfigModel.setVotesOwed(0);
+            playerConfigModel.saveConfig(plugin);
+        }
+    }
+
+    public String getPlayerIp(Player player){
+        String ip = player.spigot().getRawAddress().toString();
+        //trim to ip from e.g. /127.0.0.1:32673
+        try {
+            ip = ip.substring(ip.indexOf('/') + 1, ip.indexOf(':'));
+        } catch (StringIndexOutOfBoundsException e) {
+            ip = "ERROR";
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to Parse IP", e);
+        }
+        return ip;
     }
 
     @EventHandler
@@ -241,6 +247,19 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
         return false;
     }
 
+    private List<OfflinePlayer> getBannedAlts(String playerIP, String playerUUID) {
+        List<OfflinePlayer> banned = new ArrayList<>();
+        for (String uuid : playerData.getUUIDsByIP(playerIP)) {
+            if (uuid.equalsIgnoreCase(playerUUID))
+                continue;
+            OfflinePlayer p = getServer().getOfflinePlayer(UUID.fromString(uuid));
+            if (p.isBanned()) {
+                banned.add(p);
+            }
+        }
+        return banned;
+    }
+
     public void broadcastOPs(String s) {
         for (Player p : getServer().getOnlinePlayers()) {
             if (p.isOp())
@@ -260,7 +279,7 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
                 command.setTabCompleter((TabCompleter) executor);
             }
         } else {
-            getLogger().log(Level.WARNING,"The \'{0}\' command was not found. Please check your plugin.yml file.", commandName);
+            getLogger().log(Level.WARNING,"The \"{0}\" command was not found. Please check your plugin.yml file.", commandName);
         }
     }
 

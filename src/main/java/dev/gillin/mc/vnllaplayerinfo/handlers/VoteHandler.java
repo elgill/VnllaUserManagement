@@ -22,9 +22,12 @@ public class VoteHandler {
 
         playerConfigModel.setTotalVotes(playerConfigModel.getTotalVotes() + numVotes);
 
-        HashMap<String, GroupInfo> groupInfoHashMap =playerConfigModel.getGroupInfos();
+        HashMap<String, GroupInfo> groupInfoHashMap = playerConfigModel.getGroupInfos();
         for(GroupModel groupModel: plugin.getGroups().getVoteGroupModels()){
             GroupInfo groupInfo;
+            if(groupModel.getVotesRequired() <= 0){
+                continue;
+            }
             if(groupInfoHashMap.containsKey(groupModel.getGroupKey())){
                 groupInfo = groupInfoHashMap.get(groupModel.getGroupKey());
             } else {
