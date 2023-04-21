@@ -1,4 +1,4 @@
-package dev.gillin.mc.vnllaplayerinfo.database;
+package dev.gillin.mc.vnllausermanagement.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

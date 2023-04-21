@@ -1,4 +1,4 @@
-package dev.gillin.mc.vnllaplayerinfo.player;
+package dev.gillin.mc.vnllausermanagement.player;
 
 public class GroupInfo {
     private String groupName;

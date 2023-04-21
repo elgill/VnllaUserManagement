@@ -1,4 +1,4 @@
-package dev.gillin.mc.vnllaplayerinfo;
+package dev.gillin.mc.vnllausermanagement;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -23,7 +23,7 @@ class ForgeTest {
     static final String FORGE_COLOR = "dark_blue";
 
     /**
-     * Method under test: {@link Forge#Forge(VnllaPlayerInfo)}
+     * Method under test: {@link Forge#Forge(VnllaUserManagement)}
      */
     @Test
     @Disabled("TODO: Complete this test")
@@ -42,7 +42,7 @@ class ForgeTest {
 
         // Arrange
         // TODO: Populate arranged inputs
-        VnllaPlayerInfo p = null;
+        VnllaUserManagement p = null;
 
         // Act
         Forge actualForge = new Forge(p);
@@ -127,7 +127,7 @@ class ForgeTest {
         //   Diffblue Cover tried to run the arrange/act section, but the method under
         //   test threw
         //   java.lang.NullPointerException: Cannot invoke "org.bukkit.command.Command.getName()" because "command" is null
-        //       at dev.gillin.mc.vnllaplayerinfo.Forge.onCommand(Forge.java:57)
+        //       at dev.gillin.mc.vnllausermanagement.Forge.onCommand(Forge.java:57)
         //   See https://diff.blue/R013 to resolve this issue.
 
         (new Forge(null)).onCommand(mock(CommandSender.class), mock(Command.class), "Command Label", new String[]{"Args"});

@@ -1,8 +1,8 @@
-package dev.gillin.mc.vnllaplayerinfo.commands;
+package dev.gillin.mc.vnllausermanagement.commands;
 
-import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
-import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
-import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
+import dev.gillin.mc.vnllausermanagement.CommonUtilities;
+import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
+import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -14,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 
 public class LastLocationExecutor implements CommandExecutor {
-    private final VnllaPlayerInfo plugin;
+    private final VnllaUserManagement plugin;
 
-    public LastLocationExecutor(VnllaPlayerInfo plugin) {
+    public LastLocationExecutor(VnllaUserManagement plugin) {
         this.plugin = plugin;
     }
     @Override

@@ -1,7 +1,7 @@
-name: VnllaPlayerInfo
+name: VnllaUserManagement
 version: '${project.version}'
 author: Chris Gillin
-main: dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo
+main: dev.gillin.mc.vnllausermanagement.VnllaUserManagement
 api-version: 1.19
 
 

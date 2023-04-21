@@ -1,4 +1,4 @@
-package dev.gillin.mc.vnllaplayerinfo;
+package dev.gillin.mc.vnllausermanagement;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

@@ -1,7 +1,7 @@
-package dev.gillin.mc.vnllaplayerinfo.groups;
+package dev.gillin.mc.vnllausermanagement.groups;
 
-import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
-import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
+import dev.gillin.mc.vnllausermanagement.CommonUtilities;
+import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class Groups implements TabExecutor{
-	private final VnllaPlayerInfo plugin;
+	private final VnllaUserManagement plugin;
 	private final List<GroupModel> groupModels;
 	private final List<GroupModel> voteGroupModels;
 
-	public Groups(VnllaPlayerInfo p) {
+	public Groups(VnllaUserManagement p) {
 		plugin=p;
 		Bukkit.getLogger().log(Level.INFO,"Parsing GroupModels... ");
 		groupModels = GroupSerializer.deserializeGroups(p.getConfig().getConfigurationSection("groups"));

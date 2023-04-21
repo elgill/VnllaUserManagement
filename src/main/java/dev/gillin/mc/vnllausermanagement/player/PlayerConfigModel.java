@@ -1,6 +1,6 @@
-package dev.gillin.mc.vnllaplayerinfo.player;
+package dev.gillin.mc.vnllausermanagement.player;
 
-import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
+import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo.GROUP;
+import static dev.gillin.mc.vnllausermanagement.VnllaUserManagement.GROUP;
 
 public class PlayerConfigModel {
     private String playerId;
@@ -156,7 +156,7 @@ public class PlayerConfigModel {
     }
 
     //returns file from playerdata folder in plugin folder
-    public static File getPlayerFile(VnllaPlayerInfo plugin, String uuid) {
+    public static File getPlayerFile(VnllaUserManagement plugin, String uuid) {
         File f = new File(plugin.getDataFolder() + File.separator + "playerdata" + File.separator + uuid + ".yml");
         if (!f.exists()) {
             try {
@@ -172,7 +172,7 @@ public class PlayerConfigModel {
         return f;
     }
 
-    public static FileConfiguration getPlayerConfig(VnllaPlayerInfo plugin, String uuid) {
+    public static FileConfiguration getPlayerConfig(VnllaUserManagement plugin, String uuid) {
         FileConfiguration config = YamlConfiguration.loadConfiguration(getPlayerFile(plugin, uuid));
         if (!config.isSet("uuid")) {
             config.set("uuid", uuid);
@@ -184,7 +184,7 @@ public class PlayerConfigModel {
     }
 
     //save changes in config file
-    public boolean saveConfig(VnllaPlayerInfo plugin) {
+    public boolean saveConfig(VnllaUserManagement plugin) {
         try {
             //TODO: Move these to static constant variables
             config.set("votes.totalVotes", getTotalVotes());
@@ -223,7 +223,7 @@ public class PlayerConfigModel {
     }
 
     // Deserialize a FileConfiguration object into a PlayerConfigDataModel object
-    public static PlayerConfigModel fromUUID(VnllaPlayerInfo plugin, String uuid) {
+    public static PlayerConfigModel fromUUID(VnllaUserManagement plugin, String uuid) {
         FileConfiguration config = getPlayerConfig(plugin, uuid);
         PlayerConfigModel data = new PlayerConfigModel();
 

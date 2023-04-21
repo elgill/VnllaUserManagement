@@ -1,4 +1,4 @@
-package dev.gillin.mc.vnllaplayerinfo;
+package dev.gillin.mc.vnllausermanagement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

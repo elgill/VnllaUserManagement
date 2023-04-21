@@ -1,16 +1,16 @@
-package dev.gillin.mc.vnllaplayerinfo;
+package dev.gillin.mc.vnllausermanagement;
 
-import dev.gillin.mc.vnllaplayerinfo.commands.LastLocationExecutor;
-import dev.gillin.mc.vnllaplayerinfo.commands.StatsExecutor;
-import dev.gillin.mc.vnllaplayerinfo.commands.StatusExecutor;
-import dev.gillin.mc.vnllaplayerinfo.commands.StatusIPExecutor;
-import dev.gillin.mc.vnllaplayerinfo.database.PlayerData;
-import dev.gillin.mc.vnllaplayerinfo.database.SQLiteConnection;
-import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
-import dev.gillin.mc.vnllaplayerinfo.groups.Groups;
-import dev.gillin.mc.vnllaplayerinfo.handlers.VoteHandler;
-import dev.gillin.mc.vnllaplayerinfo.player.GroupInfo;
-import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
+import dev.gillin.mc.vnllausermanagement.commands.LastLocationExecutor;
+import dev.gillin.mc.vnllausermanagement.commands.StatsExecutor;
+import dev.gillin.mc.vnllausermanagement.commands.StatusExecutor;
+import dev.gillin.mc.vnllausermanagement.commands.StatusIPExecutor;
+import dev.gillin.mc.vnllausermanagement.database.PlayerData;
+import dev.gillin.mc.vnllausermanagement.database.SQLiteConnection;
+import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
+import dev.gillin.mc.vnllausermanagement.groups.Groups;
+import dev.gillin.mc.vnllausermanagement.handlers.VoteHandler;
+import dev.gillin.mc.vnllausermanagement.player.GroupInfo;
+import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -33,10 +33,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //TODO: Rename VnllaUserManagement
-public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlayerInfo {
+public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaUserManagement {
     public static final String FORGE = "forge";
     public static final String GROUP = "group";
-    private final VnllaPlayerInfo plugin = this;
+    private final VnllaUserManagement plugin = this;
     private VoteHandler voteHandler;
     private Groups groups;
 
@@ -45,10 +45,10 @@ public class VnllaPlayerInfo extends JavaPlugin implements Listener, IVnllaPlaye
 
     final Logger logger = plugin.getLogger();
 
-    public VnllaPlayerInfo() {
+    public VnllaUserManagement() {
     }
 
-    protected VnllaPlayerInfo(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
+    protected VnllaUserManagement(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
     {
         super(loader, description, dataFolder, file);
     }

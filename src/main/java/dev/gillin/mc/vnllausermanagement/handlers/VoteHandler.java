@@ -1,9 +1,9 @@
-package dev.gillin.mc.vnllaplayerinfo.handlers;
+package dev.gillin.mc.vnllausermanagement.handlers;
 
-import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
-import dev.gillin.mc.vnllaplayerinfo.groups.GroupModel;
-import dev.gillin.mc.vnllaplayerinfo.player.GroupInfo;
-import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
+import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
+import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
+import dev.gillin.mc.vnllausermanagement.player.GroupInfo;
+import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 public class VoteHandler {
-    public void giveVote(VnllaPlayerInfo plugin, Player p, PlayerConfigModel playerConfigModel, int numVotes) {
+    public void giveVote(VnllaUserManagement plugin, Player p, PlayerConfigModel playerConfigModel, int numVotes) {
         if (numVotes <= 0)
             return;
 

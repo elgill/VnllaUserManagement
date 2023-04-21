@@ -1,4 +1,4 @@
-package dev.gillin.mc.vnllaplayerinfo.commands;
+package dev.gillin.mc.vnllausermanagement.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

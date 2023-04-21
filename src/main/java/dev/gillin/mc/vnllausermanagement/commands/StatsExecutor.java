@@ -1,8 +1,8 @@
-package dev.gillin.mc.vnllaplayerinfo.commands;
+package dev.gillin.mc.vnllausermanagement.commands;
 
-import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
-import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
-import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
+import dev.gillin.mc.vnllausermanagement.CommonUtilities;
+import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
+import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import org.bukkit.ChatColor;
 import org.bukkit.Statistic;
 import org.bukkit.command.Command;
@@ -15,9 +15,9 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class StatsExecutor implements CommandExecutor {
-    private final VnllaPlayerInfo plugin;
+    private final VnllaUserManagement plugin;
 
-    public StatsExecutor(VnllaPlayerInfo plugin) {
+    public StatsExecutor(VnllaUserManagement plugin) {
         this.plugin = plugin;
     }
 

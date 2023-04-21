@@ -1,6 +1,6 @@
-package dev.gillin.mc.vnllaplayerinfo.commands;
+package dev.gillin.mc.vnllausermanagement.commands;
 
-import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
+import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class StatusIPExecutor implements CommandExecutor {
-    private final VnllaPlayerInfo plugin;
+    private final VnllaUserManagement plugin;
 
-    public StatusIPExecutor(VnllaPlayerInfo plugin) {
+    public StatusIPExecutor(VnllaUserManagement plugin) {
         this.plugin = plugin;
     }
 

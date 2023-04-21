@@ -1,8 +1,8 @@
-package dev.gillin.mc.vnllaplayerinfo.commands;
+package dev.gillin.mc.vnllausermanagement.commands;
 
-import dev.gillin.mc.vnllaplayerinfo.CommonUtilities;
-import dev.gillin.mc.vnllaplayerinfo.VnllaPlayerInfo;
-import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
+import dev.gillin.mc.vnllausermanagement.CommonUtilities;
+import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
+import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class StatusExecutor implements CommandExecutor{
-	private final VnllaPlayerInfo plugin;
-	public StatusExecutor(VnllaPlayerInfo plugin) {
+	private final VnllaUserManagement plugin;
+	public StatusExecutor(VnllaUserManagement plugin) {
 		this.plugin = plugin;
 	}
 	@Override

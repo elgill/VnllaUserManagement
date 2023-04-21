@@ -1,28 +1,22 @@
-package dev.gillin.mc.vnllaplayerinfo;
+package dev.gillin.mc.vnllausermanagement;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import dev.gillin.mc.vnllaplayerinfo.player.PlayerConfigModel;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class VnllaPlayerInfoTest {
-    private VnllaPlayerInfo vnllaPlayerInfo;
+public class VnllaUserManagementTest {
+    private VnllaUserManagement vnllaUserManagement;
     private ServerMock server;
 
     @BeforeEach
     public void setUp() {
         server = MockBukkit.mock();
-        vnllaPlayerInfo = MockBukkit.load(VnllaPlayerInfo.class);
+        vnllaUserManagement = MockBukkit.load(VnllaUserManagement.class);
     }
     @AfterEach
     public void tearDown() {

@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.gillin.mc</groupId>
-    <artifactId>VnllaPlayerInfo</artifactId>
+    <artifactId>VnllaUserManagement</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>VnllaPlayerInfo</name>
+    <name>VnllaUserManagement</name>
 
     <properties>
         <java.version>1.8</java.version>

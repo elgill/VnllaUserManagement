@@ -1,4 +1,4 @@
-package dev.gillin.mc.vnllaplayerinfo.datamodels;
+package dev.gillin.mc.vnllausermanagement.datamodels;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package dev.gillin.mc.vnllaplayerinfo.groups;
+package dev.gillin.mc.vnllausermanagement.groups;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
