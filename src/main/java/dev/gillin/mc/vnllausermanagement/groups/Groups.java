@@ -29,10 +29,10 @@ public class Groups implements TabExecutor{
 		voteGroupModels= new ArrayList<>();
 		for(GroupModel groupModel: groupModels){
 			if(groupModel.isVoteAchievable()){
-				Bukkit.getLogger().log(Level.INFO,"Vote Achievable GroupModel: {0}",groupModel);
+				Bukkit.getLogger().log(Level.FINE,"Vote Achievable GroupModel: {0}",groupModel);
 				voteGroupModels.add(groupModel);
 			} else {
-				Bukkit.getLogger().log(Level.INFO,"Non Vote Achievable GroupModel: {0}",groupModel);
+				Bukkit.getLogger().log(Level.FINE,"Non Vote Achievable GroupModel: {0}",groupModel);
 			}
 		}
 	}

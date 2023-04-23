@@ -37,8 +37,13 @@ public class PlayerData {
     public void insertPlayerIP(String uuid, String ip) {
         String insertSQL = "INSERT INTO players (uuid, ip) VALUES (?, ?);";
         if(ipExistsForUUID(uuid,ip)){
+            Bukkit.getLogger().log(Level.INFO, "IP[{0}] record already exists in alt detector DB for UUID[{1}]",
+                    new String[]{ip, uuid});
             return;
         }
+
+        Bukkit.getLogger().log(Level.INFO, "Entering into alt detector DB, IP[{0}] UUID[{1}]",
+                new String[]{ip, uuid});
 
         try (Connection conn = connection.getConnection();
              PreparedStatement statement = conn.prepareStatement(insertSQL)) {
