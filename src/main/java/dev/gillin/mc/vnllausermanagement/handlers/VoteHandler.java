@@ -5,9 +5,7 @@ import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
 import dev.gillin.mc.vnllausermanagement.player.GroupInfo;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.logging.Level;
@@ -54,8 +52,7 @@ public class VoteHandler {
         playerConfigModel.saveConfig(plugin);
         /*
             These are messages if we want to add back expiration messages
-            Two remain: p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip1remain + ChatColor.DARK_GREEN +" more votes to earn VIP, and " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes for VIP2.");
-            One Remain: p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes to VIP2.");
+            Two remain: p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip1remain + ChatColor.DARK_GREEN +" more votes to earn VIP, and " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes for VIP2.")
         */
 
     }

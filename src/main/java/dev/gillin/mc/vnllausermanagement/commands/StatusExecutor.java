@@ -46,14 +46,15 @@ public class StatusExecutor implements CommandExecutor{
 
 	private void printStatusMessage(String[] args, CommandSender sender) {
 		OfflinePlayer offlinePlayer = CommonUtilities.getOfflinePlayerByString(args[0]);
+		String playerName = offlinePlayer.getName();
 		String uuid = offlinePlayer.getUniqueId().toString();
 		List<String> ips=plugin.getPlayerData().getIPsByUUID(uuid);
 		List<String> alts = getPlayerAlts(sender, offlinePlayer, uuid, ips);
 
 		PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
 
-		sender.sendMessage(ChatColor.LIGHT_PURPLE+"Name: "+ChatColor.WHITE+offlinePlayer.getName());
-		sender.sendMessage(ChatColor.LIGHT_PURPLE+"UUID: "+ChatColor.WHITE+uuid);
+		sender.sendMessage(ChatColor.LIGHT_PURPLE+"Name: "+ChatColor.WHITE + offlinePlayer.getName());
+		sender.sendMessage(ChatColor.LIGHT_PURPLE+"UUID: "+ChatColor.WHITE + uuid);
 
 		//if player has ever logged in
 		if(playerConfigModel.getLastLogin()>0) {
@@ -63,7 +64,7 @@ public class StatusExecutor implements CommandExecutor{
 			sender.sendMessage(ChatColor.RED+"This player has never logged on..");
 		}
 		if(offlinePlayer.isBanned()) {
-			bannedAltsSection(sender, offlinePlayer, alts);
+			bannedAltsSection(sender, playerName, alts);
 		}
 	}
 
@@ -127,8 +128,8 @@ public class StatusExecutor implements CommandExecutor{
 		}
 	}
 
-	private void bannedAltsSection(CommandSender sender, OfflinePlayer offlinePlayer, List<String> alts) {
-		BanEntry ban=plugin.getServer().getBanList(BanList.Type.NAME).getBanEntry(offlinePlayer.getName());
+	private void bannedAltsSection(CommandSender sender, String playerName, List<String> alts) {
+		BanEntry ban=plugin.getServer().getBanList(BanList.Type.NAME).getBanEntry(playerName);
 		if (ban != null) {
 			sender.sendMessage(ChatColor.RED + "Banned: " + ChatColor.RESET + ban.getCreated());
 			sender.sendMessage(ChatColor.RED + "Banned by: " + ChatColor.RESET + ban.getSource());
