@@ -18,7 +18,7 @@ public class VoteHandler {
 
         for(String cmd: plugin.getServerConfigModel().getVoteAwardCommands()){
             String compiledCmd = cmd.replace("%PLAYER%", p.getName());
-            Bukkit.getLogger().log(Level.INFO, "Executing: {0}", compiledCmd);
+            Bukkit.getLogger().log(Level.FINE, "Executing: {0}", compiledCmd);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), compiledCmd);
         }
 
@@ -28,6 +28,7 @@ public class VoteHandler {
         for(GroupModel groupModel: plugin.getGroups().getVoteGroupModels()){
             GroupInfo groupInfo;
             if(groupModel.getVotesRequired() <= 0){
+                Bukkit.getLogger().log(Level.INFO, "Skipping earn check for non-vote achievable group: {0}", groupModel);
                 continue;
             }
             if(groupInfoHashMap.containsKey(groupModel.getGroupKey())){
@@ -47,6 +48,7 @@ public class VoteHandler {
                     plugin.getGroups().earnGroup(p, groupModel);
                 }
             }
+            groupInfoHashMap.put(groupModel.getGroupKey(), groupInfo);
         }
 
         playerConfigModel.saveConfig(plugin);

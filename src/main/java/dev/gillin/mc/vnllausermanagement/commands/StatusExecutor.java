@@ -2,6 +2,7 @@ package dev.gillin.mc.vnllausermanagement.commands;
 
 import dev.gillin.mc.vnllausermanagement.CommonUtilities;
 import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
+import dev.gillin.mc.vnllausermanagement.player.GroupInfo;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -17,26 +18,29 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class StatusExecutor implements CommandExecutor{
 	private final VnllaUserManagement plugin;
+
 	public StatusExecutor(VnllaUserManagement plugin) {
 		this.plugin = plugin;
 	}
+
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String commandLabel, String[] args) {
 		if(command.getName().equalsIgnoreCase("status")&&sender.hasPermission("VnllaPlayerInfo.seestatus")) {
 			if(args.length==1) {
 				new BukkitRunnable() {
-		            @Override
-		            public void run() {
+					@Override
+					public void run() {
 						printStatusMessage(args, sender);
 					}
-		            
-		        }.runTaskAsynchronously(plugin);
-		        return true;
+
+				}.runTaskAsynchronously(plugin);
+				return true;
 			} else {
 				return false;
 			}
@@ -59,8 +63,7 @@ public class StatusExecutor implements CommandExecutor{
 		//if player has ever logged in
 		if(playerConfigModel.getLastLogin()>0) {
 			existingPlayerSections(sender, offlinePlayer, uuid, ips, alts, playerConfigModel);
-		}
-		else {
+		} else {
 			sender.sendMessage(ChatColor.RED+"This player has never logged on..");
 		}
 		if(offlinePlayer.isBanned()) {
@@ -69,7 +72,13 @@ public class StatusExecutor implements CommandExecutor{
 	}
 
 	private void existingPlayerSections(CommandSender sender, OfflinePlayer offlinePlayer, String uuid, List<String> ips, List<String> alts, PlayerConfigModel playerConfigModel) {
-		sender.sendMessage(ChatColor.LIGHT_PURPLE+"Groups: "+ChatColor.WHITE+ playerConfigModel.getGroups().toString());
+		sender.sendMessage(ChatColor.LIGHT_PURPLE+"Non Vote Groups: "+ChatColor.WHITE+ playerConfigModel.getGroups().toString());
+
+		for(Map.Entry<String, GroupInfo> groupInfoEntry:playerConfigModel.getGroupInfos().entrySet()){
+			String groupKey = groupInfoEntry.getKey();
+			GroupInfo groupInfo = groupInfoEntry.getValue();
+		}
+
 		//TODO: Pending lose and earn
 
 		sender.sendMessage(ChatColor.LIGHT_PURPLE+"IP: "+ChatColor.WHITE+ ips.toString());
@@ -122,8 +131,7 @@ public class StatusExecutor implements CommandExecutor{
 
 		if(offlinePlayer.isOnline()) {
 			sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Online: "+ChatColor.WHITE+"Now");
-		}
-		else if(playerConfigModel.getLastLogout() > 0) {
+		} else if(playerConfigModel.getLastLogout() > 0) {
 			sender.sendMessage(ChatColor.LIGHT_PURPLE+"Last Online: "+ChatColor.WHITE+CommonUtilities.makeTimeReadable(System.currentTimeMillis() - playerConfigModel.getLastLogout(), false)+" ago");
 		}
 	}
