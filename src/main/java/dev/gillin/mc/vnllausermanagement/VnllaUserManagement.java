@@ -3,6 +3,7 @@ package dev.gillin.mc.vnllausermanagement;
 import dev.gillin.mc.vnllausermanagement.commands.*;
 import dev.gillin.mc.vnllausermanagement.database.PlayerData;
 import dev.gillin.mc.vnllausermanagement.database.SQLiteConnection;
+import dev.gillin.mc.vnllausermanagement.datamodels.ServerConfigModel;
 import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
 import dev.gillin.mc.vnllausermanagement.groups.Groups;
 import dev.gillin.mc.vnllausermanagement.handlers.VoteHandler;
@@ -33,7 +34,7 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
     private final VnllaUserManagement plugin = this;
     private VoteHandler voteHandler;
     private Groups groups;
-
+    private ServerConfigModel serverConfigModel;
     private SQLiteConnection connection;
     private PlayerData playerData;
 
@@ -51,29 +52,30 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(this, this);
 
+        serverConfigModel = ServerConfigModel.fromConfigFile(getConfig());
         groups = new Groups(this);
 
+        Bukkit.getLogger().log(Level.INFO, "Parsed server config: {0}", serverConfigModel);
+
+        registerCommand("givevote", new GiveVoteExecutor(this));
         registerCommand("group", new GroupCommandExecutor(this));
         registerCommand("stats", new StatsExecutor(this));
         registerCommand("status", new StatusExecutor(this));
         registerCommand("statusip", new StatusIPExecutor(this));
         registerCommand("lastlocation", new LastLocationExecutor(this));
-        registerCommand("donor", this);
         registerCommand("wipeip", this);
 
         //initialize data folder
         createPlayerDataDirectory();
 
-        //TODO Test This-file name doesnt work
-        String dbName = getConfig().getString("sqlite.filename", "defaultsqlfilename");
-        connection = new SQLiteConnection(dbName, getDataFolder());
+        connection = new SQLiteConnection(serverConfigModel.getSqliteFileName(), getDataFolder());
         playerData = new PlayerData(connection);
 
         voteHandler = new VoteHandler();
 
         //set all players as logged in
-        for (Player p : getServer().getOnlinePlayers()) {
-            PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin, p.getUniqueId().toString());
+        for (Player player : getServer().getOnlinePlayers()) {
+            PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin, player.getUniqueId().toString());
             playerConfigModel.setLastLogin(System.currentTimeMillis());
             playerConfigModel.saveConfig(plugin);
         }
@@ -217,22 +219,7 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
     @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String commandLabel, String[] args) {
-        if (command.getName().equalsIgnoreCase("givevote") && args.length == 1) {
-            String playerInput = args[0];
-            OfflinePlayer p = CommonUtilities.getOfflinePlayerByString(playerInput);
-
-            logger.log(Level.INFO, "Vote given to {0}", p.getName());
-            PlayerConfigModel playerConfigModel= PlayerConfigModel.fromUUID(plugin,p.getUniqueId().toString());
-            if (p.isOnline()) {
-                giveVote((Player) p, playerConfigModel, 1);
-            }
-            else {
-                playerConfigModel.setVotesOwed(playerConfigModel.getVotesOwed() + 1);
-                playerConfigModel.saveConfig(plugin);
-            }
-
-            return true;
-        } else if (command.getName().equalsIgnoreCase("wipeip") && args.length == 1) {
+        if (command.getName().equalsIgnoreCase("wipeip") && args.length == 1) {
             OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
             playerData.deleteIPsByUUID(p.getUniqueId().toString());
             sender.sendMessage(ChatColor.GREEN + "IPs for " + p.getName() + " cleared from the alt detector db!");
@@ -335,6 +322,10 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
 
     public Groups getGroups() {
         return groups;
+    }
+
+    public ServerConfigModel getServerConfigModel() {
+        return serverConfigModel;
     }
 
     @Override

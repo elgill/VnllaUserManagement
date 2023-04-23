@@ -4,11 +4,13 @@ import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
 import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
 import dev.gillin.mc.vnllausermanagement.player.GroupInfo;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 
 public class VoteHandler {
@@ -16,9 +18,11 @@ public class VoteHandler {
         if (numVotes <= 0)
             return;
 
-        //TODO: Move this to ServerConfigModel
-        p.giveExpLevels(numVotes * plugin.getConfig().getInt("votes.xplevels"));
-        p.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, numVotes * plugin.getConfig().getInt("votes.beef")));
+        for(String cmd: plugin.getServerConfigModel().getVoteAwardCommands()){
+            String compiledCmd = cmd.replace("%PLAYER%", p.getName());
+            Bukkit.getLogger().log(Level.INFO, "Executing: {0}", compiledCmd);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), compiledCmd);
+        }
 
         playerConfigModel.setTotalVotes(playerConfigModel.getTotalVotes() + numVotes);
 

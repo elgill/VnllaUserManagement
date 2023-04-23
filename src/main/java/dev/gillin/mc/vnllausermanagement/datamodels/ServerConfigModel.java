@@ -1,25 +1,58 @@
 package dev.gillin.mc.vnllausermanagement.datamodels;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
 import java.util.List;
 
 public class ServerConfigModel {
-/*    SQLite:
-    Filename: players
 
+    public static final String SQLITE_FILENAME = "sqlite.filename";
+    public static final String STATUS_OBJECTIVES = "status_objectives";
+    public static final String VOTE_AWARD_COMMANDS = "vote_award_commands";
+    private String sqliteFileName;
 
-#keeprank is in seconds, 2592000 is 30 days (60*60*24*30)
-    votes:
-    xplevels: 5
-    beef: 3
-    vip1: 25
-    vip2: 60
-    keeprank: 2592000
+    private List<String> voteAwardCommands;
 
-            #List lowest to highest ranks
-    groups:*/
+    private List<String> statusObjectives;
 
-    //TODO: Do this
-    private List<String> voteCommands;
+    public String getSqliteFileName() {
+        return sqliteFileName;
+    }
 
+    public void setSqliteFileName(String sqliteFileName) {
+        this.sqliteFileName = sqliteFileName;
+    }
 
+    public List<String> getVoteAwardCommands() {
+        return voteAwardCommands;
+    }
+
+    public void setVoteAwardCommands(List<String> voteAwardCommands) {
+        this.voteAwardCommands = voteAwardCommands;
+    }
+
+    public List<String> getStatusObjectives() {
+        return statusObjectives;
+    }
+
+    public void setStatusObjectives(List<String> statusObjectives) {
+        this.statusObjectives = statusObjectives;
+    }
+
+    public static ServerConfigModel fromConfigFile(FileConfiguration config){
+        ServerConfigModel serverConfigModel = new ServerConfigModel();
+        serverConfigModel.setSqliteFileName(config.getString(SQLITE_FILENAME));
+        serverConfigModel.setStatusObjectives(config.getStringList(STATUS_OBJECTIVES));
+        serverConfigModel.setVoteAwardCommands(config.getStringList(VOTE_AWARD_COMMANDS));
+        return  serverConfigModel;
+    }
+
+    @Override
+    public String toString() {
+        return "ServerConfigModel{" +
+                "sqliteFileName='" + sqliteFileName + '\'' +
+                ", voteAwardCommands=" + voteAwardCommands +
+                ", statusObjectives=" + statusObjectives +
+                '}';
+    }
 }
