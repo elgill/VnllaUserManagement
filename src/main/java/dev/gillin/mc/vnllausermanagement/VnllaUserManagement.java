@@ -30,7 +30,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaUserManagement {
-    public static final String GROUP = "group";
     private final VnllaUserManagement plugin = this;
     private VoteHandler voteHandler;
     private Groups groups;
@@ -233,15 +232,6 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
             }
 
             return true;
-        } else if (command.getName().equalsIgnoreCase("donor") && args.length == 1) {
-            //TODO: reimplement this
-            //I think this will be removed
-            return true;
-        } else if (command.getName().equalsIgnoreCase("forgegiven") && args.length == 1) {
-            //TODO: figure this out
-            //Unless I make a custom command config file- it's getting removed
-            //I don't think it's possible
-            return true;
         } else if (command.getName().equalsIgnoreCase("wipeip") && args.length == 1) {
             OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
             playerData.deleteIPsByUUID(p.getUniqueId().toString());
@@ -262,13 +252,6 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
             }
         }
         return banned;
-    }
-
-    public void broadcastOPs(String s) {
-        for (Player p : getServer().getOnlinePlayers()) {
-            if (p.isOp())
-                p.sendMessage(ChatColor.RED + s);
-        }
     }
 
     public void giveVote(Player p, PlayerConfigModel playerConfigModel, int num) {

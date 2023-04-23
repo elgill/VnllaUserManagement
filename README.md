@@ -8,9 +8,8 @@ VnllaUserManagement is a Minecraft plugin designed to manage player information,
 * Check information about a player
 * Teleport to a player's last known location
 * Give a player a vote
-* Grant donor status to a player
 * Change a player's group
-* Wipe IP records from the alt database
+* Alt detection
 * And more!
 
 ## Commands
@@ -22,9 +21,7 @@ VnllaUserManagement is a Minecraft plugin designed to manage player information,
 | /statusip     | Displays accounts associated with a given IP         | /statusip [ip]                   | VnllaPlayerInfo.seestatusip |
 | /lastlocation | Teleports to a player's last known location          | /lastlocation [uuid]             | VnllaPlayerInfo.seestatus   |
 | /givevote     | Gives a player a vote                                | /givevote [uuid]                 | VnllaPlayerInfo.givevote    |
-| /donor        | Grants donor status to a player                      | /donor [player]                  | VnllaPlayerInfo.givedonor   |
-| /forge        | Adds colored title and lore to an item               | /forge <color> "<name>" "<lore>" | VnllaPlayerInfo.seestatus   |
-| /forgegiven   | Subtracts 1 from forgeitem for player                | /forgegiven [player]             | VnllaPlayerInfo.seestatus   |
+| /forge        | Adds colored title and lore to an item               | /forge [color] "[name]" "[lore]" | VnllaPlayerInfo.seestatus   |
 | /group        | Changes a player's group                             | /group [player] [group]          | VnllaPlayerInfo.group       |
 | /wipeip       | Wipes all IPs from a user in the alt database        | /wipeip [player]                 | VnllaPlayerInfo.wipeip      |
 
@@ -37,7 +34,6 @@ VnllaUserManagement is a Minecraft plugin designed to manage player information,
 | VnllaPlayerInfo.seestatusip  | Allows user to use /statusip, returning all users associated with the specified IP address        | false   |
 | VnllaPlayerInfo.seestatusalt | Allows user to see known alts in /status, regardless of whether the user is banned                | false   |
 | VnllaPlayerInfo.givevote     | Allows to give a vote to a player                                                                 | op      |
-| VnllaPlayerInfo.givedonor    | Allows to give donor to a player                                                                  | op      |
 | VnllaPlayerInfo.group        | Allows to change player group                                                                     | false   |
 
 ## Installation
