@@ -32,9 +32,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//TODO: Rename VnllaUserManagement
 public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaUserManagement {
-    public static final String FORGE = "forge";
     public static final String GROUP = "group";
     private final VnllaUserManagement plugin = this;
     private VoteHandler voteHandler;
