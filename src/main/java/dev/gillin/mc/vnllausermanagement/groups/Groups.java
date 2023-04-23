@@ -45,7 +45,7 @@ public class Groups implements TabExecutor{
 		return voteGroupModels;
 	}
 
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         List<String> completions = new ArrayList<>();
         List<String> possibles = new ArrayList<>();
         if (args.length == 1) {	
@@ -79,8 +79,7 @@ public class Groups implements TabExecutor{
 		}
 		return null;
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String alias, String[] args) {
 		if(command.getName().equalsIgnoreCase("group")) {
@@ -89,7 +88,7 @@ public class Groups implements TabExecutor{
 				OfflinePlayer player= CommonUtilities.getOfflinePlayerByString(args[0]);
 				String addOrRemove = args[1];
 				GroupModel groupModel = getGroupModelByKey(args[2].toLowerCase());
-				//Only online players for now- should fix this
+				//Only online players for now- should fix this TODO
 				if(!player.isOnline() || groupModel == null){
 					sender.sendMessage(ChatColor.RED + "");
 					return false;
@@ -101,93 +100,14 @@ public class Groups implements TabExecutor{
 					loseGroup(player.getPlayer(),groupModel);
 					return true;
 				}
-
+			} else {
+				//Currently only support three arguments
 				return false;
 			}
 		}
 		
 		return false;
 	}
-
-	
-	/*public boolean switchGroups(OfflinePlayer p, String group, boolean ownerperm, FileConfiguration config) {
-		group=group.toLowerCase();
-		//FileConfiguration config=plugin.getPlayerConfig(p.getUniqueId().toString());		
-		if(group.equalsIgnoreCase("default")) {
-			config.set("group", group);
-			if(config.isSet("votes.viprank")&&!config.getString("votes.viprank").equals("default")) {
-				config.set("group", config.getString("votes.viprank"));
-				//TODO advance viprank
-				plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "advancemessage "+p.getName()+" "+config.getString("votes.viprank").toUpperCase()+"!");
-			}
-			else {
-				//TODO advance default
-				plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "advancemessage "+p.getName()+" DEFAULT!");
-			}
-			plugin.savePlayerConfig(config, p.getUniqueId().toString());
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove owner");
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove admin");
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove mod");
-			return true;
-		}
-		else if(group.equalsIgnoreCase("vip")) {
-			config.set("group", group);
-			if(config.isSet("votes.viprank")&&config.getString("votes.viprank").equals("vip2")) {
-				config.set("group", config.getString("votes.viprank"));
-				//TODO advance vip2
-				plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "advancemessage "+p.getName()+" VIP2!");
-			}
-			else {
-				//TODO advance vip
-				plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "advancemessage "+p.getName()+" VIP!");
-			}
-			plugin.savePlayerConfig(config, p.getUniqueId().toString());
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove owner");
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove admin");
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove mod");
-			return true;
-		}
-		else if(group.equalsIgnoreCase("vip2")) {
-			config.set("group", group);
-			//TODO advance vip2
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "advancemessage "+p.getName()+" VIP2!");
-			plugin.savePlayerConfig(config, p.getUniqueId().toString());
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove owner");
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove admin");
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove mod");
-			return true;
-		}
-		else if(group.equalsIgnoreCase("mod")) {
-			config.set("group", group);
-			//TODO advance mod
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "advancemessage "+p.getName()+" MOD!");
-			plugin.savePlayerConfig(config, p.getUniqueId().toString());
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove owner");
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove admin");
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent add mod");
-			return true;
-		}
-		else if(group.equalsIgnoreCase("admin")) {
-			config.set("group", group);
-			//TODO advance admin
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "advancemessage "+p.getName()+" ADMIN!");
-			plugin.savePlayerConfig(config, p.getUniqueId().toString());
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent remove owner");
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent add admin");
-			return true;
-		}
-		else if(group.equalsIgnoreCase("owner")&&ownerperm) {
-			config.set("group", group);
-			//TODO advance owner
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "advancemessage "+p.getName()+" OWNER!");
-			plugin.savePlayerConfig(config, p.getUniqueId().toString());
-			plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "lp user "+p.getName()+" parent add owner");
-			return true;
-		}
-		
-		
-		return false;
-	}*/
 
 	public void earnGroup(Player p, GroupModel groupModel){
 		//List<String> perms = groupModel.getPermissions();
