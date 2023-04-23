@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ public class PlayerConfigModel {
     public static final String CURRENT_VOTES = "currentVotes";
     public static final String EXPIRATION = "expiration";
     public static final String PLAYERDATA_FOLDER = "playerdata";
+    public static final String PENDING_EARN_GROUP="pendingEarnGroup";
+    public static final String PENDING_LOSE_GROUP="pendingLoseGroup";
     private String playerId;
     private int totalVotes;
     private int votesOwed; //votes.owed
@@ -45,6 +48,8 @@ public class PlayerConfigModel {
     private String lastPlayerName; //lastPlayerName
     private List<String> ipAddresses;
     private List<String> groups;
+    private List<String> pendingEarnedGroups;
+    private List<String> pendingLostGroups;
     private FileConfiguration config;
     private Map<String, GroupInfo> groupInfos;
     static final Logger logger = Bukkit.getLogger();
@@ -147,6 +152,9 @@ public class PlayerConfigModel {
     }
 
     public List<String> getIpAddresses() {
+        if(ipAddresses == null){
+            ipAddresses = new ArrayList<>();
+        }
         return ipAddresses;
     }
 
@@ -168,6 +176,28 @@ public class PlayerConfigModel {
 
     public void setConfig(FileConfiguration config) {
         this.config = config;
+    }
+
+    public List<String> getPendingEarnedGroups() {
+        if(pendingEarnedGroups == null){
+            pendingEarnedGroups = new ArrayList<>();
+        }
+        return pendingEarnedGroups;
+    }
+
+    public void setPendingEarnedGroups(List<String> pendingEarnedGroups) {
+        this.pendingEarnedGroups = pendingEarnedGroups;
+    }
+
+    public List<String> getPendingLostGroups() {
+        if(pendingLostGroups == null){
+            pendingLostGroups = new ArrayList<>();
+        }
+        return pendingLostGroups;
+    }
+
+    public void setPendingLostGroups(List<String> pendingLostGroups) {
+        this.pendingLostGroups = pendingLostGroups;
     }
 
     //returns file from playerdata folder in plugin folder
@@ -211,6 +241,8 @@ public class PlayerConfigModel {
             config.set(LASTLOCATION_WORLD, getLastLocationWorld());
             config.set(LAST_PLAYER_NAME, getLastPlayerName());
             config.set(IPS, getIpAddresses());
+            config.set(PENDING_EARN_GROUP, getPendingEarnedGroups());
+            config.set(PENDING_LOSE_GROUP, getPendingLostGroups());
 
             if (config.isConfigurationSection(EARNED_GROUPS)) {
                 config.set(EARNED_GROUPS, null);
@@ -251,6 +283,8 @@ public class PlayerConfigModel {
         data.setLastLocationWorld(config.getString(LASTLOCATION_WORLD));
         data.setLastPlayerName(config.getString(LAST_PLAYER_NAME));
         data.setIpAddresses(config.getStringList(IPS));
+        data.setPendingEarnedGroups(config.getStringList(PENDING_EARN_GROUP));
+        data.setPendingLostGroups(config.getStringList(PENDING_LOSE_GROUP));
 
         ConfigurationSection groupsSection = config.getConfigurationSection(EARNED_GROUPS);
         HashMap<String, GroupInfo> groupInfos = new HashMap<>();

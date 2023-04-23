@@ -1,9 +1,6 @@
 package dev.gillin.mc.vnllausermanagement;
 
-import dev.gillin.mc.vnllausermanagement.commands.LastLocationExecutor;
-import dev.gillin.mc.vnllausermanagement.commands.StatsExecutor;
-import dev.gillin.mc.vnllausermanagement.commands.StatusExecutor;
-import dev.gillin.mc.vnllausermanagement.commands.StatusIPExecutor;
+import dev.gillin.mc.vnllausermanagement.commands.*;
 import dev.gillin.mc.vnllausermanagement.database.PlayerData;
 import dev.gillin.mc.vnllausermanagement.database.SQLiteConnection;
 import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
@@ -55,15 +52,15 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(this, this);
 
+        groups = new Groups(this);
+
+        registerCommand("group", new GroupCommandExecutor(this));
         registerCommand("stats", new StatsExecutor(this));
         registerCommand("status", new StatusExecutor(this));
         registerCommand("statusip", new StatusIPExecutor(this));
         registerCommand("lastlocation", new LastLocationExecutor(this));
         registerCommand("donor", this);
         registerCommand("wipeip", this);
-
-        groups = new Groups(this);
-        registerCommand(GROUP, groups);
 
         //initialize data folder
         createPlayerDataDirectory();
@@ -171,6 +168,15 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
 
         //lose vip if applicable
         plugin.checkLoseGroup(joiningPlayer, playerConfigModel);
+
+        for(String earnGroupKey: playerConfigModel.getPendingEarnedGroups()){
+            groups.earnGroup(joiningPlayer, groups.getGroupModelByKey(earnGroupKey));
+        }
+        for(String loseGroupKey: playerConfigModel.getPendingLostGroups()){
+            groups.loseGroup(joiningPlayer, groups.getGroupModelByKey(loseGroupKey));
+        }
+        playerConfigModel.setPendingEarnedGroups(new ArrayList<>());
+        playerConfigModel.setPendingLostGroups(new ArrayList<>());
 
         playerConfigModel.setLastPlayerName(name);
         List<String> ips = playerConfigModel.getIpAddresses();
