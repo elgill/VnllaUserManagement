@@ -14,16 +14,15 @@ VnllaUserManagement is a Minecraft plugin designed to manage player information,
 
 ## Commands
 
-| Command       | Description                                          | Usage                            | Permission                  |
-|---------------|------------------------------------------------------|----------------------------------|-----------------------------|
-| /stats        | Displays player stats to player                      | /stats                           |                             |
-| /status       | Displays info about a player in chat to the executor | /status [player]                 | VnllaPlayerInfo.seestatus   |
-| /statusip     | Displays accounts associated with a given IP         | /statusip [ip]                   | VnllaPlayerInfo.seestatusip |
-| /lastlocation | Teleports to a player's last known location          | /lastlocation [uuid]             | VnllaPlayerInfo.seestatus   |
-| /givevote     | Gives a player a vote                                | /givevote [uuid]                 | VnllaPlayerInfo.givevote    |
-| /forge        | Adds colored title and lore to an item               | /forge [color] "[name]" "[lore]" | VnllaPlayerInfo.seestatus   |
-| /group        | Changes a player's group                             | /group [player] [group]          | VnllaPlayerInfo.group       |
-| /wipeip       | Wipes all IPs from a user in the alt database        | /wipeip [player]                 | VnllaPlayerInfo.wipeip      |
+| Command       | Description                                          | Usage                                | Permission                  |
+|---------------|------------------------------------------------------|--------------------------------------|-----------------------------|
+| /stats        | Displays player stats to player                      | /stats                               |                             |
+| /status       | Displays info about a player in chat to the executor | /status [player]                     | VnllaPlayerInfo.seestatus   |
+| /statusip     | Displays accounts associated with a given IP         | /statusip [ip]                       | VnllaPlayerInfo.seestatusip |
+| /lastlocation | Teleports to a player's last known location          | /lastlocation [uuid]                 | VnllaPlayerInfo.seestatus   |
+| /givevote     | Gives a player a vote                                | /givevote [uuid]                     | VnllaPlayerInfo.givevote    |
+| /group        | Changes a player's group                             | /group [player] [add/remove] [group] | VnllaPlayerInfo.group       |
+| /wipeip       | Wipes all IPs from a user in the alt database        | /wipeip [player]                     | VnllaPlayerInfo.wipeip      |
 
 ## Permissions
 

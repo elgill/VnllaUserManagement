@@ -227,7 +227,7 @@ public class PlayerConfigModel {
 
     //save changes in config file
     public void saveConfig(VnllaUserManagement plugin) {
-        Bukkit.getLogger().log(Level.INFO, "Saving PlayerConfigModel[{0}] into file", this.toString());
+        Bukkit.getLogger().log(Level.INFO, "Saving PlayerConfigModel[{0}] into file", this);
         try {
             config.set(TOTAL_VOTES, getTotalVotes());
             config.set(VOTES_OWED,getVotesOwed());

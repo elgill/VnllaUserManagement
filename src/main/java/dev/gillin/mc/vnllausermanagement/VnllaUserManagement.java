@@ -4,6 +4,7 @@ import dev.gillin.mc.vnllausermanagement.commands.*;
 import dev.gillin.mc.vnllausermanagement.database.PlayerData;
 import dev.gillin.mc.vnllausermanagement.database.SQLiteConnection;
 import dev.gillin.mc.vnllausermanagement.datamodels.ServerConfigModel;
+import dev.gillin.mc.vnllausermanagement.events.EventListener;
 import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
 import dev.gillin.mc.vnllausermanagement.groups.Groups;
 import dev.gillin.mc.vnllausermanagement.handlers.VoteHandler;
@@ -15,10 +16,6 @@ import org.bukkit.*;
 import org.bukkit.BanList.Type;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -28,17 +25,14 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaUserManagement {
+public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagement {
     private final VnllaUserManagement plugin = this;
     private VoteHandler voteHandler;
     private Groups groups;
     private ServerConfigModel serverConfigModel;
     private SQLiteConnection connection;
     private PlayerData playerData;
-
-    final Logger logger = plugin.getLogger();
 
     public VnllaUserManagement() {
     }
@@ -50,7 +44,7 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
 
     @Override
     public void onEnable() {
-        this.getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(new EventListener(this), this);
 
         serverConfigModel = ServerConfigModel.fromConfigFile(getConfig());
         groups = new Groups(this);
@@ -93,41 +87,17 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
         }
     }
 
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player joiningPlayer = event.getPlayer();
-        String uuid = joiningPlayer.getUniqueId().toString();
-        PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
-
-        handleVotesOwed(joiningPlayer, playerConfigModel);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                String ip = getPlayerIp(joiningPlayer);
-                updatePlayerConfigModel(ip, joiningPlayer, playerConfigModel);
-                playerData.insertPlayerIP(uuid, ip);
-
-                //is one of their alts banned?!
-                List<OfflinePlayer> banned = getBannedAlts(ip, uuid);
-
-                sendAltWarning(banned, joiningPlayer);
-            }
-        }.runTaskAsynchronously(plugin);
-    }
-
-    private void sendAltWarning(List<OfflinePlayer> banned, Player joiningPlayer) {
+    public void sendAltWarning(List<OfflinePlayer> banned, Player joiningPlayer) {
         for (OfflinePlayer bannedPlayer : banned) {
             String playerName = bannedPlayer.getName();
 
             if (playerName == null) {
-                logger.log(Level.SEVERE, "Banned player name is null");
+                Bukkit.getLogger().log(Level.SEVERE, "Banned player name is null");
                 return;
             }
             BanEntry banEntry = getServer().getBanList(Type.NAME).getBanEntry(playerName);
             if (banEntry == null) {
-                logger.log(Level.SEVERE, "No Ban entry found for Player: {0}", playerName);
+                Bukkit.getLogger().log(Level.SEVERE, "No Ban entry found for Player: {0}", playerName);
                 return;
             }
 
@@ -164,7 +134,7 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
 
     }
 
-    private void updatePlayerConfigModel(String ip, Player joiningPlayer, PlayerConfigModel playerConfigModel) {
+    public void updatePlayerConfigModel(String ip, Player joiningPlayer, PlayerConfigModel playerConfigModel) {
         String name = joiningPlayer.getName();
 
         //lose vip if applicable
@@ -189,7 +159,7 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
         playerConfigModel.saveConfig(plugin);
     }
 
-    private void handleVotesOwed(Player joiningPlayer, PlayerConfigModel playerConfigModel) {
+    public void handleVotesOwed(Player joiningPlayer, PlayerConfigModel playerConfigModel) {
         if (playerConfigModel.getVotesOwed() > 0) {
             Bukkit.getLogger().log(Level.FINE, "Applying Votes owed to {0}", joiningPlayer.getName());
             plugin.giveVote(joiningPlayer, playerConfigModel, playerConfigModel.getVotesOwed());
@@ -210,12 +180,6 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
         return ip;
     }
 
-    @EventHandler
-    public void onLeave(PlayerQuitEvent event) {
-        //handle leaving events asynchronously, as to not lag server
-        handleLeaving(event.getPlayer().getUniqueId().toString(), true);
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String commandLabel, String[] args) {
@@ -228,7 +192,7 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
         return false;
     }
 
-    private List<OfflinePlayer> getBannedAlts(String playerIP, String playerUUID) {
+    public List<OfflinePlayer> getBannedAlts(String playerIP, String playerUUID) {
         List<OfflinePlayer> banned = new ArrayList<>();
         for (String uuid : playerData.getUUIDsByIP(playerIP)) {
             if (uuid.equalsIgnoreCase(playerUUID))
@@ -274,7 +238,6 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
         playerConfigModel.saveConfig(plugin);
     }
 
-    //TODO not great code but it gets the job done - Check if this works now
     //had to add a synchronous way because asynchronous doesn't work when server is shutting down
     public void handleLeaving(String uuid, boolean async) {
         Player player = plugin.getServer().getPlayer(UUID.fromString(uuid));
