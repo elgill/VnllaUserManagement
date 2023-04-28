@@ -57,7 +57,7 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
         registerCommand("status", new StatusExecutor(this));
         registerCommand("statusip", new StatusIPExecutor(this));
         registerCommand("lastlocation", new LastLocationExecutor(this));
-        registerCommand("wipeip", this);
+        registerCommand("wipeip", new WipeIpExecutor(this));
 
         //initialize data folder
         createPlayerDataDirectory();
@@ -178,18 +178,6 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
             Bukkit.getLogger().log(Level.SEVERE, "Failed to Parse IP", e);
         }
         return ip;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String commandLabel, String[] args) {
-        if (command.getName().equalsIgnoreCase("wipeip") && args.length == 1) {
-            OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
-            playerData.deleteIPsByUUID(p.getUniqueId().toString());
-            sender.sendMessage(ChatColor.GREEN + "IPs for " + p.getName() + " cleared from the alt detector db!");
-            return true;
-        }
-        return false;
     }
 
     public List<OfflinePlayer> getBannedAlts(String playerIP, String playerUUID) {
