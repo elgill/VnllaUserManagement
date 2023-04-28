@@ -14,13 +14,14 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.BanList.Type;
-import org.bukkit.command.*;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
@@ -134,39 +135,6 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
 
     }
 
-    public void updatePlayerConfigModel(String ip, Player joiningPlayer, PlayerConfigModel playerConfigModel) {
-        String name = joiningPlayer.getName();
-
-        //lose vip if applicable
-        plugin.checkLoseGroup(joiningPlayer, playerConfigModel);
-
-        for(String earnGroupKey: playerConfigModel.getPendingEarnedGroups()){
-            groups.earnGroup(joiningPlayer, groups.getGroupModelByKey(earnGroupKey));
-        }
-        for(String loseGroupKey: playerConfigModel.getPendingLostGroups()){
-            groups.loseGroup(joiningPlayer, groups.getGroupModelByKey(loseGroupKey));
-        }
-        playerConfigModel.setPendingEarnedGroups(new ArrayList<>());
-        playerConfigModel.setPendingLostGroups(new ArrayList<>());
-
-        playerConfigModel.setLastPlayerName(name);
-        List<String> ips = playerConfigModel.getIpAddresses();
-        if (!ips.contains(ip)) {
-            ips.add(ip);
-        }
-        playerConfigModel.setLastLogin(System.currentTimeMillis());
-        //save changes
-        playerConfigModel.saveConfig(plugin);
-    }
-
-    public void handleVotesOwed(Player joiningPlayer, PlayerConfigModel playerConfigModel) {
-        if (playerConfigModel.getVotesOwed() > 0) {
-            Bukkit.getLogger().log(Level.FINE, "Applying Votes owed to {0}", joiningPlayer.getName());
-            plugin.giveVote(joiningPlayer, playerConfigModel, playerConfigModel.getVotesOwed());
-            playerConfigModel.setVotesOwed(0);
-            playerConfigModel.saveConfig(plugin);
-        }
-    }
 
     public String getPlayerIp(Player player){
         String ip = player.spigot().getRawAddress().toString();
@@ -191,10 +159,6 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
             }
         }
         return banned;
-    }
-
-    public void giveVote(Player p, PlayerConfigModel playerConfigModel, int num) {
-        voteHandler.giveVote(plugin,p,playerConfigModel,num);
     }
 
     private void registerCommand(String commandName, CommandExecutor executor) {
@@ -277,6 +241,10 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
 
     public ServerConfigModel getServerConfigModel() {
         return serverConfigModel;
+    }
+
+    public VoteHandler getVoteHandler() {
+        return voteHandler;
     }
 
     @Override

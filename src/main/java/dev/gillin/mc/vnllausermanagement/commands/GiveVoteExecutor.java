@@ -27,7 +27,7 @@ public class GiveVoteExecutor implements CommandExecutor {
             Bukkit.getLogger().log(Level.INFO, "Vote given to {0}", player.getName());
             PlayerConfigModel playerConfigModel= PlayerConfigModel.fromUUID(plugin, player.getUniqueId().toString());
             if (player.isOnline()) {
-                plugin.giveVote((Player) player, playerConfigModel, 1);
+                plugin.getVoteHandler().giveVote(plugin, (Player) player, playerConfigModel, 1);
             }
             else {
                 playerConfigModel.setVotesOwed(playerConfigModel.getVotesOwed() + 1);
