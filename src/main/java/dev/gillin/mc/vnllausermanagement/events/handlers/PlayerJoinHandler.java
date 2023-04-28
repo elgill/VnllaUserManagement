@@ -29,7 +29,7 @@ public class PlayerJoinHandler implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                String ip = plugin.getPlayerIp(joiningPlayer);
+                String ip = getPlayerIp(joiningPlayer);
                 updatePlayerConfigModel(ip, joiningPlayer, playerConfigModel);
                 plugin.getPlayerData().insertPlayerIP(uuid, ip);
 
@@ -73,5 +73,17 @@ public class PlayerJoinHandler implements Listener {
             playerConfigModel.setVotesOwed(0);
             playerConfigModel.saveConfig(plugin);
         }
+    }
+
+    public String getPlayerIp(Player player){
+        String ip = player.spigot().getRawAddress().toString();
+        //trim to ip from e.g. /127.0.0.1:32673
+        try {
+            ip = ip.substring(ip.indexOf('/') + 1, ip.indexOf(':'));
+        } catch (StringIndexOutOfBoundsException e) {
+            ip = "ERROR";
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to Parse IP", e);
+        }
+        return ip;
     }
 }

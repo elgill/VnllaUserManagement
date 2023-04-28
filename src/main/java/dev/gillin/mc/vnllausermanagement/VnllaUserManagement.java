@@ -4,7 +4,7 @@ import dev.gillin.mc.vnllausermanagement.commands.*;
 import dev.gillin.mc.vnllausermanagement.database.PlayerData;
 import dev.gillin.mc.vnllausermanagement.database.SQLiteConnection;
 import dev.gillin.mc.vnllausermanagement.datamodels.ServerConfigModel;
-import dev.gillin.mc.vnllausermanagement.events.EventListener;
+import dev.gillin.mc.vnllausermanagement.events.PluginEventListener;
 import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
 import dev.gillin.mc.vnllausermanagement.groups.Groups;
 import dev.gillin.mc.vnllausermanagement.handlers.VoteHandler;
@@ -34,6 +34,7 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
     private ServerConfigModel serverConfigModel;
     private SQLiteConnection connection;
     private PlayerData playerData;
+    private PluginEventListener pluginEventListener;
 
     public VnllaUserManagement() {
     }
@@ -45,10 +46,12 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
 
     @Override
     public void onEnable() {
-        getServer().getPluginManager().registerEvents(new EventListener(this), this);
 
+        pluginEventListener = new PluginEventListener(this);
         serverConfigModel = ServerConfigModel.fromConfigFile(getConfig());
         groups = new Groups(this);
+
+        getServer().getPluginManager().registerEvents(pluginEventListener, this);
 
         Bukkit.getLogger().log(Level.INFO, "Parsed server config: {0}", serverConfigModel);
 
@@ -81,7 +84,7 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
         Collection<? extends Player> playerList=getServer().getOnlinePlayers();
         //log leave times for players on /stop
         for (Player p : playerList) {
-            handleLeaving(p.getUniqueId().toString(), false);
+            pluginEventListener.getPlayerQuitHandler().handleLeaving(p.getUniqueId().toString(), false);
         }
         if (connection != null) {
             connection.close();
@@ -136,18 +139,6 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
     }
 
 
-    public String getPlayerIp(Player player){
-        String ip = player.spigot().getRawAddress().toString();
-        //trim to ip from e.g. /127.0.0.1:32673
-        try {
-            ip = ip.substring(ip.indexOf('/') + 1, ip.indexOf(':'));
-        } catch (StringIndexOutOfBoundsException e) {
-            ip = "ERROR";
-            Bukkit.getLogger().log(Level.SEVERE, "Failed to Parse IP", e);
-        }
-        return ip;
-    }
-
     public List<OfflinePlayer> getBannedAlts(String playerIP, String playerUUID) {
         List<OfflinePlayer> banned = new ArrayList<>();
         for (String uuid : playerData.getUUIDsByIP(playerIP)) {
@@ -187,47 +178,6 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
             groupInfoMap.put(groupInfoKey,groupInfo);
         }
         playerConfigModel.setGroupInfos(groupInfoMap);
-        playerConfigModel.saveConfig(plugin);
-    }
-
-    //had to add a synchronous way because asynchronous doesn't work when server is shutting down
-    public void handleLeaving(String uuid, boolean async) {
-        Player player = plugin.getServer().getPlayer(UUID.fromString(uuid));
-        if(player == null){
-            return;
-        }
-        Location loc = player.getLocation();
-        if (async) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    doLeavingTasks(uuid, loc);
-                }
-            }.runTaskAsynchronously(plugin);
-        } else {
-            doLeavingTasks(uuid, loc);
-        }
-    }
-
-    private void doLeavingTasks(String uuid, Location loc) {
-        PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
-        long current = System.currentTimeMillis();
-        long lastLogin = playerConfigModel.getLastLogin();
-
-        playerConfigModel.setLastLogout(current);
-        long currentSessionLength = (current - lastLogin);
-        if (currentSessionLength < (1000 * 60 * 60 * 12)) {
-            playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime() + currentSessionLength);
-        }
-        //TODO: Investigate why I did LastLocation manually- Location object would be better
-        playerConfigModel.setLastLocationX(loc.getX());
-        playerConfigModel.setLastLocationY(loc.getY());
-        playerConfigModel.setLastLocationZ(loc.getZ());
-        World world = loc.getWorld();
-        if(world != null){
-            playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
-        }
-
         playerConfigModel.saveConfig(plugin);
     }
 

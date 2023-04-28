@@ -8,10 +8,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class EventListener implements Listener {
+public class PluginEventListener implements Listener {
     private final PlayerJoinHandler playerJoinHandler;
     private final PlayerQuitHandler playerQuitHandler;
-    public EventListener(VnllaUserManagement vnllaUserManagement) {
+    public PluginEventListener(VnllaUserManagement vnllaUserManagement) {
         playerJoinHandler = new PlayerJoinHandler(vnllaUserManagement);
         playerQuitHandler = new PlayerQuitHandler(vnllaUserManagement);
     }
@@ -24,5 +24,13 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         playerQuitHandler.handleQuit(event.getPlayer());
+    }
+
+    public PlayerJoinHandler getPlayerJoinHandler() {
+        return playerJoinHandler;
+    }
+
+    public PlayerQuitHandler getPlayerQuitHandler() {
+        return playerQuitHandler;
     }
 }
