@@ -2,6 +2,7 @@ package dev.gillin.mc.vnllausermanagement.player;
 
 import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,10 +23,7 @@ public class PlayerConfigModel {
     public static final String LAST_LOGIN = "playtime.lastLogin";
     public static final String LAST_LOGOUT = "playtime.lastLogout";
     public static final String TOTAL_ALL_TIME = "playtime.totalAllTime";
-    public static final String LASTLOCATION_X = "lastlocation.x";
-    public static final String LASTLOCATION_Y = "lastlocation.y";
-    public static final String LASTLOCATION_Z = "lastlocation.z";
-    public static final String LASTLOCATION_WORLD = "lastlocation.world";
+    public static final String LAST_LOCATION = "lastlocation";
     public static final String LAST_PLAYER_NAME = "lastPlayerName";
     public static final String IPS = "ips";
     public static final String EARNED_GROUPS = "earnedGroups";
@@ -41,10 +39,7 @@ public class PlayerConfigModel {
     private long lastLogin; //playtime.lastLogin
     private long lastLogout; //playtime.lastLogout
     private long totalPlaytime; //playtime.totalAllTime
-    private double lastLocationX; //lastlocation.x
-    private double lastLocationY; //lastlocation.y
-    private double lastLocationZ; //lastlocation.z
-    private String lastLocationWorld; //lastlocation.world
+    private Location lastLocation;
     private String lastPlayerName; //lastPlayerName
     private List<String> ipAddresses;
     private List<String> groups;
@@ -103,36 +98,12 @@ public class PlayerConfigModel {
         this.totalPlaytime = totalPlaytime;
     }
 
-    public double getLastLocationX() {
-        return lastLocationX;
+    public Location getLastLocation() {
+        return lastLocation;
     }
 
-    public void setLastLocationX(double lastLocationX) {
-        this.lastLocationX = lastLocationX;
-    }
-
-    public double getLastLocationY() {
-        return lastLocationY;
-    }
-
-    public void setLastLocationY(double lastLocationY) {
-        this.lastLocationY = lastLocationY;
-    }
-
-    public double getLastLocationZ() {
-        return lastLocationZ;
-    }
-
-    public void setLastLocationZ(double lastLocationZ) {
-        this.lastLocationZ = lastLocationZ;
-    }
-
-    public String getLastLocationWorld() {
-        return lastLocationWorld;
-    }
-
-    public void setLastLocationWorld(String lastLocationWorld) {
-        this.lastLocationWorld = lastLocationWorld;
+    public void setLastLocation(Location lastLocation) {
+        this.lastLocation = lastLocation;
     }
 
     public String getLastPlayerName() {
@@ -236,10 +207,7 @@ public class PlayerConfigModel {
             config.set(LAST_LOGIN, getLastLogin());
             config.set(LAST_LOGOUT, getLastLogout());
             config.set(TOTAL_ALL_TIME, getTotalPlaytime());
-            config.set(LASTLOCATION_X, getLastLocationX());
-            config.set(LASTLOCATION_Y, getLastLocationY());
-            config.set(LASTLOCATION_Z,     getLastLocationZ());
-            config.set(LASTLOCATION_WORLD, getLastLocationWorld());
+            config.set(LAST_LOCATION, getLastLocation());
             config.set(LAST_PLAYER_NAME, getLastPlayerName());
             config.set(IPS, getIpAddresses());
             config.set(PENDING_EARN_GROUP, getPendingEarnedGroups());
@@ -278,10 +246,7 @@ public class PlayerConfigModel {
         data.setLastLogin(config.getLong(LAST_LOGIN));
         data.setLastLogout(config.getLong(LAST_LOGOUT));
         data.setTotalPlaytime(config.getLong(TOTAL_ALL_TIME));
-        data.setLastLocationX(config.getDouble(LASTLOCATION_X));
-        data.setLastLocationY(config.getDouble(LASTLOCATION_Y));
-        data.setLastLocationZ(config.getDouble(LASTLOCATION_Z));
-        data.setLastLocationWorld(config.getString(LASTLOCATION_WORLD));
+        data.setLastLocation(config.getLocation(LAST_LOCATION));
         data.setLastPlayerName(config.getString(LAST_PLAYER_NAME));
         data.setIpAddresses(config.getStringList(IPS));
         data.setPendingEarnedGroups(config.getStringList(PENDING_EARN_GROUP));
@@ -323,10 +288,7 @@ public class PlayerConfigModel {
                 ", lastLogin=" + lastLogin +
                 ", lastLogout=" + lastLogout +
                 ", totalPlaytime=" + totalPlaytime +
-                ", lastLocationX=" + lastLocationX +
-                ", lastLocationY=" + lastLocationY +
-                ", lastLocationZ=" + lastLocationZ +
-                ", lastLocationWorld='" + lastLocationWorld + '\'' +
+                ", lastLocation=" + lastLocation +
                 ", lastPlayerName='" + lastPlayerName + '\'' +
                 ", ipAddresses=" + ipAddresses +
                 ", groups=" + groups +

@@ -3,7 +3,6 @@ package dev.gillin.mc.vnllausermanagement.events.handlers;
 import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -49,14 +48,7 @@ public class PlayerQuitHandler {
         if (currentSessionLength < (1000 * 60 * 60 * 12)) {
             playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime() + currentSessionLength);
         }
-        //TODO: Investigate why I did LastLocation manually- Location object would be better
-        playerConfigModel.setLastLocationX(loc.getX());
-        playerConfigModel.setLastLocationY(loc.getY());
-        playerConfigModel.setLastLocationZ(loc.getZ());
-        World world = loc.getWorld();
-        if(world != null){
-            playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
-        }
+        playerConfigModel.setLastLocation(loc);
 
         playerConfigModel.saveConfig(plugin);
     }
