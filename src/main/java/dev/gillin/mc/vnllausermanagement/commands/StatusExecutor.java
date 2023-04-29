@@ -16,10 +16,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class StatusExecutor implements CommandExecutor{
@@ -74,12 +71,16 @@ public class StatusExecutor implements CommandExecutor{
 	private void existingPlayerSections(CommandSender sender, OfflinePlayer offlinePlayer, String uuid, List<String> ips, List<String> alts, PlayerConfigModel playerConfigModel) {
 		sender.sendMessage(ChatColor.LIGHT_PURPLE+"Non Vote Groups: "+ChatColor.WHITE+ playerConfigModel.getGroups().toString());
 
-		for(Map.Entry<String, GroupInfo> groupInfoEntry:playerConfigModel.getGroupInfos().entrySet()){
+		sender.sendMessage(ChatColor.LIGHT_PURPLE + "========== Group Information ==========");
+		for (Map.Entry<String, GroupInfo> groupInfoEntry : playerConfigModel.getGroupInfos().entrySet()) {
 			String groupKey = groupInfoEntry.getKey();
 			GroupInfo groupInfo = groupInfoEntry.getValue();
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "Group: " + ChatColor.WHITE + groupKey);
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "  Active: " + ChatColor.WHITE + groupInfo.isActive());
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "  Current Votes: " + ChatColor.WHITE + groupInfo.getCurrentVotes());
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "  Expiration: " + ChatColor.WHITE + CommonUtilities.makeTimeReadable(groupInfo.getExpiration(), false));
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "---------------------------------------");
 		}
-
-		//TODO: Pending lose and earn
 
 		sender.sendMessage(ChatColor.LIGHT_PURPLE+"IP: "+ChatColor.WHITE+ ips.toString());
 		sender.sendMessage(ChatColor.LIGHT_PURPLE+"Total Votes: "+ChatColor.WHITE+ playerConfigModel.getTotalVotes());

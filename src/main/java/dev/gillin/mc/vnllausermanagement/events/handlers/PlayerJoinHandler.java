@@ -1,18 +1,20 @@
 package dev.gillin.mc.vnllausermanagement.events.handlers;
 
 import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
+import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
+import dev.gillin.mc.vnllausermanagement.player.GroupInfo;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
-public class PlayerJoinHandler implements Listener {
+public class PlayerJoinHandler{
 
     private final VnllaUserManagement plugin;
 
@@ -44,8 +46,7 @@ public class PlayerJoinHandler implements Listener {
     public void updatePlayerConfigModel(String ip, Player joiningPlayer, PlayerConfigModel playerConfigModel) {
         String name = joiningPlayer.getName();
 
-        //lose vip if applicable
-        plugin.checkLoseGroup(joiningPlayer, playerConfigModel);
+        checkLoseGroup(joiningPlayer, playerConfigModel);
 
         for(String earnGroupKey: playerConfigModel.getPendingEarnedGroups()){
             plugin.getGroups().earnGroup(joiningPlayer, plugin.getGroups().getGroupModelByKey(earnGroupKey));
@@ -73,6 +74,23 @@ public class PlayerJoinHandler implements Listener {
             playerConfigModel.setVotesOwed(0);
             playerConfigModel.saveConfig(plugin);
         }
+    }
+
+    public void checkLoseGroup(Player player, PlayerConfigModel playerConfigModel) {
+        long currentTime = System.currentTimeMillis();
+        Map<String, GroupInfo> groupInfoMap = playerConfigModel.getGroupInfos();
+        for(Map.Entry<String, GroupInfo> groupInfoEntry: groupInfoMap.entrySet()){
+            String groupInfoKey = groupInfoEntry.getKey();
+            GroupInfo groupInfo = groupInfoEntry.getValue();
+            if(groupInfo.isActive() && groupInfo.getExpiration() < currentTime){
+                groupInfo.setActive(false);
+                GroupModel groupModel = plugin.getGroups().getGroupModelByKey(groupInfoKey);
+                plugin.getGroups().loseGroup(player, groupModel);
+            }
+            groupInfoMap.put(groupInfoKey,groupInfo);
+        }
+        playerConfigModel.setGroupInfos(groupInfoMap);
+        playerConfigModel.saveConfig(plugin);
     }
 
     public String getPlayerIp(Player player){

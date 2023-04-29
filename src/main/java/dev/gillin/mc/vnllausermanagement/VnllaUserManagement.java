@@ -5,27 +5,28 @@ import dev.gillin.mc.vnllausermanagement.database.PlayerData;
 import dev.gillin.mc.vnllausermanagement.database.SQLiteConnection;
 import dev.gillin.mc.vnllausermanagement.datamodels.ServerConfigModel;
 import dev.gillin.mc.vnllausermanagement.events.PluginEventListener;
-import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
 import dev.gillin.mc.vnllausermanagement.groups.Groups;
+import dev.gillin.mc.vnllausermanagement.handlers.CommandHandler;
 import dev.gillin.mc.vnllausermanagement.handlers.VoteHandler;
-import dev.gillin.mc.vnllausermanagement.player.GroupInfo;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.*;
+import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagement {
     private final VnllaUserManagement plugin = this;
@@ -55,13 +56,15 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
 
         Bukkit.getLogger().log(Level.INFO, "Parsed server config: {0}", serverConfigModel);
 
-        registerCommand("givevote", new GiveVoteExecutor(this));
-        registerCommand("group", new GroupCommandExecutor(this));
-        registerCommand("stats", new StatsExecutor(this));
-        registerCommand("status", new StatusExecutor(this));
-        registerCommand("statusip", new StatusIPExecutor(this));
-        registerCommand("lastlocation", new LastLocationExecutor(this));
-        registerCommand("wipeip", new WipeIpExecutor(this));
+        CommandHandler commandHandler = new CommandHandler(this);
+
+        commandHandler.registerCommand("givevote", new GiveVoteExecutor(this));
+        commandHandler.registerCommand("group", new GroupCommandExecutor(this));
+        commandHandler.registerCommand("stats", new StatsExecutor(this));
+        commandHandler.registerCommand("status", new StatusExecutor(this));
+        commandHandler.registerCommand("statusip", new StatusIPExecutor(this));
+        commandHandler.registerCommand("lastlocation", new LastLocationExecutor(this));
+        commandHandler.registerCommand("wipeip", new WipeIpExecutor(this));
 
         //initialize data folder
         createPlayerDataDirectory();
@@ -140,45 +143,11 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
 
 
     public List<OfflinePlayer> getBannedAlts(String playerIP, String playerUUID) {
-        List<OfflinePlayer> banned = new ArrayList<>();
-        for (String uuid : playerData.getUUIDsByIP(playerIP)) {
-            if (uuid.equalsIgnoreCase(playerUUID))
-                continue;
-            OfflinePlayer p = getServer().getOfflinePlayer(UUID.fromString(uuid));
-            if (p.isBanned()) {
-                banned.add(p);
-            }
-        }
-        return banned;
-    }
-
-    private void registerCommand(String commandName, CommandExecutor executor) {
-        PluginCommand command = getCommand(commandName);
-        if (command != null) {
-            command.setExecutor(executor);
-            if (executor instanceof TabCompleter) {
-                command.setTabCompleter((TabCompleter) executor);
-            }
-        } else {
-            getLogger().log(Level.WARNING,"The \"{0}\" command was not found. Please check your plugin.yml file.", commandName);
-        }
-    }
-
-    public void checkLoseGroup(Player p, PlayerConfigModel playerConfigModel) {
-        long currentTime = System.currentTimeMillis();
-        Map<String, GroupInfo> groupInfoMap = playerConfigModel.getGroupInfos();
-        for(Map.Entry<String, GroupInfo> groupInfoEntry: groupInfoMap.entrySet()){
-            String groupInfoKey = groupInfoEntry.getKey();
-            GroupInfo groupInfo = groupInfoEntry.getValue();
-            if(groupInfo.isActive() && groupInfo.getExpiration() < currentTime){
-                groupInfo.setActive(false);
-                GroupModel groupModel = groups.getGroupModelByKey(groupInfoKey);
-                groups.loseGroup(p, groupModel);
-            }
-            groupInfoMap.put(groupInfoKey,groupInfo);
-        }
-        playerConfigModel.setGroupInfos(groupInfoMap);
-        playerConfigModel.saveConfig(plugin);
+        return playerData.getUUIDsByIP(playerIP).stream()
+                .filter(uuid -> !uuid.equalsIgnoreCase(playerUUID))
+                .map(uuid -> getServer().getOfflinePlayer(UUID.fromString(uuid)))
+                .filter(OfflinePlayer::isBanned)
+                .collect(Collectors.toList());
     }
 
     public PlayerData getPlayerData() {
