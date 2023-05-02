@@ -59,7 +59,11 @@ public class CommonUtilities {
         if(CommonUtilities.isValidUUID(playerInputted)){
             player = Bukkit.getOfflinePlayer(UUID.fromString(playerInputted));
         } else {
-            // Deprecated, but no good replacement as of now
+            /*
+             * While this is "deprecated" It is the fastest method to get this done.
+             * It's only deprecated because they want you to use uuids as the parameter
+             * Since that would make no sense for this use case, this still makes most sense.
+             */
             player = Bukkit.getOfflinePlayer(playerInputted);
         }
         return player;

@@ -25,17 +25,9 @@ commands:
     description: Gives the player a vote.
     usage: "Usage: /givevote [uuid]"
     permission: VnllaPlayerInfo.givevote
-  donor:
-    description: Grants donor to a player
-    usage: "Usage: /donor [player]"
-    permission: VnllaPlayerInfo.givedonor
   forge:
     description: Adds colored title and lore to an item.
     usage: "Usage: /forge <color> \"<name>\" \"<lore>\""
-    permission: VnllaPlayerInfo.seestatus
-  forgegiven:
-    description: Subtracts 1 from forgeitem for player.
-    usage: "Usage: /forgegiven [player]"
     permission: VnllaPlayerInfo.seestatus
   group:
     description: Changes a player's group.
@@ -61,9 +53,6 @@ permissions:
     default: false
   VnllaPlayerInfo.givevote:
     description: Allows to give a vote to a player.
-    default: op
-  VnllaPlayerInfo.givedonor:
-    description: Allows to give donor to a player.
     default: op
   VnllaPlayerInfo.group:
     description: Change player group.

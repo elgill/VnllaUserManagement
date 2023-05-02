@@ -4,11 +4,11 @@ import dev.gillin.mc.vnllausermanagement.VnllaUserManagement;
 import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
 import dev.gillin.mc.vnllausermanagement.player.GroupInfo;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
-import org.bukkit.Material;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 
 public class VoteHandler {
@@ -16,9 +16,11 @@ public class VoteHandler {
         if (numVotes <= 0)
             return;
 
-        //TODO: Move this to ServerConfigModel
-        p.giveExpLevels(numVotes * plugin.getConfig().getInt("votes.xplevels"));
-        p.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, numVotes * plugin.getConfig().getInt("votes.beef")));
+        for(String cmd: plugin.getServerConfigModel().getVoteAwardCommands()){
+            String compiledCmd = cmd.replace("%PLAYER%", p.getName());
+            Bukkit.getLogger().log(Level.FINE, "Executing: {0}", compiledCmd);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), compiledCmd);
+        }
 
         playerConfigModel.setTotalVotes(playerConfigModel.getTotalVotes() + numVotes);
 
@@ -26,6 +28,7 @@ public class VoteHandler {
         for(GroupModel groupModel: plugin.getGroups().getVoteGroupModels()){
             GroupInfo groupInfo;
             if(groupModel.getVotesRequired() <= 0){
+                Bukkit.getLogger().log(Level.INFO, "Skipping earn check for non-vote achievable group: {0}", groupModel);
                 continue;
             }
             if(groupInfoHashMap.containsKey(groupModel.getGroupKey())){
@@ -45,13 +48,13 @@ public class VoteHandler {
                     plugin.getGroups().earnGroup(p, groupModel);
                 }
             }
+            groupInfoHashMap.put(groupModel.getGroupKey(), groupInfo);
         }
 
         playerConfigModel.saveConfig(plugin);
         /*
             These are messages if we want to add back expiration messages
-            Two remain: p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip1remain + ChatColor.DARK_GREEN +" more votes to earn VIP, and " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes for VIP2.");
-            One Remain: p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes to VIP2.");
+            Two remain: p.sendMessage(ChatColor.DARK_GREEN + "You need " + ChatColor.GOLD + vip1remain + ChatColor.DARK_GREEN +" more votes to earn VIP, and " + ChatColor.GOLD + vip2remain + ChatColor.DARK_GREEN + " more votes for VIP2.")
         */
 
     }

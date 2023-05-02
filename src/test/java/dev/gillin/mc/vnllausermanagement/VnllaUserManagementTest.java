@@ -2,49 +2,34 @@ package dev.gillin.mc.vnllausermanagement;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
+import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Collections;
 
-public class VnllaUserManagementTest {
-    private VnllaUserManagement vnllaUserManagement;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class VnllaUserManagementTest {
+
     private ServerMock server;
+    private VnllaUserManagement plugin;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         server = MockBukkit.mock();
-        vnllaUserManagement = MockBukkit.load(VnllaUserManagement.class);
+        plugin = MockBukkit.load(VnllaUserManagement.class);
     }
+
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         MockBukkit.unmock();
     }
 
     @Test
-    @Disabled("I need to figure the db stuff out")
-    public void testHandleLeaving() {
-        // Prepare the test data
-        /*String uuid = "test-uuid";
-        UUID playerUUID = UUID.randomUUID();
-        Player player = server.addPlayer(playerUUID.toString());
-        World world = server.addSimpleWorld("test-world");
-        Location loc = new Location(world, 10.0, 20.0, 30.0);
-        player.teleport(loc);
-
-        // Call the handleLeaving method
-        vnllaPlayerInfo.handleLeaving(playerUUID.toString(), false);
-
-        // Retrieve the playerConfigModel from the player UUID
-        PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(vnllaPlayerInfo, uuid);
-
-        // Verify that the last logout time, location, and world are updated correctly
-        assertEquals(10.0, playerConfigModel.getLastLocationX(), 0.001);
-        assertEquals(20.0, playerConfigModel.getLastLocationY(), 0.001);
-        assertEquals(30.0, playerConfigModel.getLastLocationZ(), 0.001);
-        assertEquals("test-world", playerConfigModel.getLastLocationWorld());*/
+    void testPluginEnabled() {
+        // Ensure the plugin is enabled
+        assertTrue(plugin.isEnabled());
     }
 }
-

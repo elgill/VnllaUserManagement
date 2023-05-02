@@ -30,7 +30,7 @@ class GroupSerializerTest {
 
         assertNotNull(vip1);
         assertEquals(100, vip1.getVotesRequired());
-        assertEquals(vip1.getRankLength(),2592000);
+        assertEquals(2592000, vip1.getRankLength());
         List<String> vip1EarnRankCmds = vip1.getEarnRankCommands();
         assertTrue(vip1EarnRankCmds.contains("lp user %player% parent addtemp vip %time%"));
         List<String> vip1LoseRankCmds = vip1.getLoseRankCommands();
@@ -41,7 +41,7 @@ class GroupSerializerTest {
 
         assertNotNull(vip2);
         assertEquals(0, vip2.getVotesRequired());
-        assertEquals(vip2.getRankLength(),2592000);
+        assertEquals(2592000, vip2.getRankLength());
         List<String> vip2EarnRankCmds = vip2.getEarnRankCommands();
         assertTrue(vip2EarnRankCmds.isEmpty());
         List<String> vip2LoseRankCmds = vip2.getLoseRankCommands();
@@ -52,7 +52,7 @@ class GroupSerializerTest {
 
         assertNotNull(donor);
         assertEquals(0, donor.getVotesRequired());
-        assertEquals(donor.getRankLength(),2592000);
+        assertEquals(2592000, donor.getRankLength());
         List<String> donorEarnRankCmds = donor.getEarnRankCommands();
         assertTrue(donorEarnRankCmds.contains("lp user %player% parent addtemp donor %time%"));
         List<String> donorLoseRankCmds = donor.getLoseRankCommands();

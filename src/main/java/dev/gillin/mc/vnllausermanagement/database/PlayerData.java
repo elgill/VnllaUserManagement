@@ -36,6 +36,14 @@ public class PlayerData {
     // Insert player IP associated with a UUID
     public void insertPlayerIP(String uuid, String ip) {
         String insertSQL = "INSERT INTO players (uuid, ip) VALUES (?, ?);";
+        if(ipExistsForUUID(uuid,ip)){
+            Bukkit.getLogger().log(Level.INFO, "IP[{0}] record already exists in alt detector DB for UUID[{1}]",
+                    new String[]{ip, uuid});
+            return;
+        }
+
+        Bukkit.getLogger().log(Level.INFO, "Entering into alt detector DB, IP[{0}] UUID[{1}]",
+                new String[]{ip, uuid});
 
         try (Connection conn = connection.getConnection();
              PreparedStatement statement = conn.prepareStatement(insertSQL)) {
@@ -45,6 +53,23 @@ public class PlayerData {
         } catch (SQLException e) {
             Bukkit.getLogger().log(Level.SEVERE, "Error inserting player IP", e);
         }
+    }
+
+    // Check if IP and UUID combination already exists in the database
+    private boolean ipExistsForUUID(String uuid, String ip) {
+        String selectSQL = "SELECT 1 FROM players WHERE uuid = ? AND ip = ? LIMIT 1;";
+
+        try (Connection conn = connection.getConnection();
+             PreparedStatement statement = conn.prepareStatement(selectSQL)) {
+            statement.setString(1, uuid);
+            statement.setString(2, ip);
+            ResultSet rs = statement.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Error checking IP and UUID combination", e);
+        }
+
+        return false;
     }
 
     // Get a list of IPs associated with a UUID

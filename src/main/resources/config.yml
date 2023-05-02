@@ -1,11 +1,12 @@
 sqlite:
    filename: players
 
+status_objectives:
+   - "su_points"
 
-#keeprank is in seconds, 2592000 is 30 days (60*60*24*30)
-votes:
-   xplevels: 5
-   beef: 3
+vote_award_commands:
+   - "give %PLAYER% minecraft:cooked_beef 3"
+   - "xp add %PLAYER% 5 levels"
 
 #List lowest to highest ranks
 groups:

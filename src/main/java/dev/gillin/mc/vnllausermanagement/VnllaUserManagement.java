@@ -1,49 +1,41 @@
 package dev.gillin.mc.vnllausermanagement;
 
-import dev.gillin.mc.vnllausermanagement.commands.LastLocationExecutor;
-import dev.gillin.mc.vnllausermanagement.commands.StatsExecutor;
-import dev.gillin.mc.vnllausermanagement.commands.StatusExecutor;
-import dev.gillin.mc.vnllausermanagement.commands.StatusIPExecutor;
+import dev.gillin.mc.vnllausermanagement.commands.*;
 import dev.gillin.mc.vnllausermanagement.database.PlayerData;
 import dev.gillin.mc.vnllausermanagement.database.SQLiteConnection;
-import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
+import dev.gillin.mc.vnllausermanagement.datamodels.ServerConfigModel;
+import dev.gillin.mc.vnllausermanagement.events.PluginEventListener;
 import dev.gillin.mc.vnllausermanagement.groups.Groups;
+import dev.gillin.mc.vnllausermanagement.handlers.CommandHandler;
 import dev.gillin.mc.vnllausermanagement.handlers.VoteHandler;
-import dev.gillin.mc.vnllausermanagement.player.GroupInfo;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.*;
+import org.bukkit.BanEntry;
 import org.bukkit.BanList.Type;
-import org.bukkit.command.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-//TODO: Rename VnllaUserManagement
-public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaUserManagement {
-    public static final String FORGE = "forge";
-    public static final String GROUP = "group";
+public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagement {
     private final VnllaUserManagement plugin = this;
     private VoteHandler voteHandler;
     private Groups groups;
-
+    private ServerConfigModel serverConfigModel;
     private SQLiteConnection connection;
     private PlayerData playerData;
-
-    final Logger logger = plugin.getLogger();
+    private PluginEventListener pluginEventListener;
 
     public VnllaUserManagement() {
     }
@@ -55,31 +47,36 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
 
     @Override
     public void onEnable() {
-        this.getServer().getPluginManager().registerEvents(this, this);
 
-        registerCommand("stats", new StatsExecutor(this));
-        registerCommand("status", new StatusExecutor(this));
-        registerCommand("statusip", new StatusIPExecutor(this));
-        registerCommand("lastlocation", new LastLocationExecutor(this));
-        registerCommand("donor", this);
-        registerCommand("wipeip", this);
-
+        pluginEventListener = new PluginEventListener(this);
+        serverConfigModel = ServerConfigModel.fromConfigFile(getConfig());
         groups = new Groups(this);
-        registerCommand(GROUP, groups);
+
+        getServer().getPluginManager().registerEvents(pluginEventListener, this);
+
+        Bukkit.getLogger().log(Level.INFO, "Parsed server config: {0}", serverConfigModel);
+
+        CommandHandler commandHandler = new CommandHandler(this);
+
+        commandHandler.registerCommand("givevote", new GiveVoteExecutor(this));
+        commandHandler.registerCommand("group", new GroupCommandExecutor(this));
+        commandHandler.registerCommand("stats", new StatsExecutor(this));
+        commandHandler.registerCommand("status", new StatusExecutor(this));
+        commandHandler.registerCommand("statusip", new StatusIPExecutor(this));
+        commandHandler.registerCommand("lastlocation", new LastLocationExecutor(this));
+        commandHandler.registerCommand("wipeip", new WipeIpExecutor(this));
 
         //initialize data folder
         createPlayerDataDirectory();
 
-        //TODO Test This-file name doesnt work
-        String dbName = getConfig().getString("sqlite.filename", "defaultsqlfilename");
-        connection = new SQLiteConnection(dbName, getDataFolder());
+        connection = new SQLiteConnection(serverConfigModel.getSqliteFileName(), getDataFolder());
         playerData = new PlayerData(connection);
 
         voteHandler = new VoteHandler();
 
         //set all players as logged in
-        for (Player p : getServer().getOnlinePlayers()) {
-            PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin, p.getUniqueId().toString());
+        for (Player player : getServer().getOnlinePlayers()) {
+            PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin, player.getUniqueId().toString());
             playerConfigModel.setLastLogin(System.currentTimeMillis());
             playerConfigModel.saveConfig(plugin);
         }
@@ -90,48 +87,24 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
         Collection<? extends Player> playerList=getServer().getOnlinePlayers();
         //log leave times for players on /stop
         for (Player p : playerList) {
-            handleLeaving(p.getUniqueId().toString(), false);
+            pluginEventListener.getPlayerQuitHandler().handleLeaving(p.getUniqueId().toString(), false);
         }
         if (connection != null) {
             connection.close();
         }
     }
 
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player joiningPlayer = event.getPlayer();
-        String uuid = joiningPlayer.getUniqueId().toString();
-        PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
-
-        handleVotesOwed(joiningPlayer, playerConfigModel);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                String ip = getPlayerIp(joiningPlayer);
-                updatePlayerConfigModel(ip, joiningPlayer, playerConfigModel);
-                playerData.insertPlayerIP(uuid, ip);
-
-                //is one of their alts banned?!
-                List<OfflinePlayer> banned = getBannedAlts(ip, uuid);
-
-                sendAltWarning(banned, joiningPlayer);
-            }
-        }.runTaskAsynchronously(plugin);
-    }
-
-    private void sendAltWarning(List<OfflinePlayer> banned, Player joiningPlayer) {
+    public void sendAltWarning(List<OfflinePlayer> banned, Player joiningPlayer) {
         for (OfflinePlayer bannedPlayer : banned) {
             String playerName = bannedPlayer.getName();
 
             if (playerName == null) {
-                logger.log(Level.SEVERE, "Banned player name is null");
+                Bukkit.getLogger().log(Level.SEVERE, "Banned player name is null");
                 return;
             }
             BanEntry banEntry = getServer().getBanList(Type.NAME).getBanEntry(playerName);
             if (banEntry == null) {
-                logger.log(Level.SEVERE, "No Ban entry found for Player: {0}", playerName);
+                Bukkit.getLogger().log(Level.SEVERE, "No Ban entry found for Player: {0}", playerName);
                 return;
             }
 
@@ -168,178 +141,13 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
 
     }
 
-    private void updatePlayerConfigModel(String ip, Player joiningPlayer, PlayerConfigModel playerConfigModel) {
-        String name = joiningPlayer.getName();
 
-        //lose vip if applicable
-        plugin.checkLoseGroup(joiningPlayer, playerConfigModel);
-
-        playerConfigModel.setLastPlayerName(name);
-        List<String> ips = playerConfigModel.getIpAddresses();
-        if (!ips.contains(ip)) {
-            ips.add(ip);
-        }
-        playerConfigModel.setLastLogin(System.currentTimeMillis());
-        //save changes
-        playerConfigModel.saveConfig(plugin);
-    }
-
-    private void handleVotesOwed(Player joiningPlayer, PlayerConfigModel playerConfigModel) {
-        if (playerConfigModel.getVotesOwed() > 0) {
-            Bukkit.getLogger().log(Level.FINE, "Applying Votes owed to {0}", joiningPlayer.getName());
-            plugin.giveVote(joiningPlayer, playerConfigModel, playerConfigModel.getVotesOwed());
-            playerConfigModel.setVotesOwed(0);
-            playerConfigModel.saveConfig(plugin);
-        }
-    }
-
-    public String getPlayerIp(Player player){
-        String ip = player.spigot().getRawAddress().toString();
-        //trim to ip from e.g. /127.0.0.1:32673
-        try {
-            ip = ip.substring(ip.indexOf('/') + 1, ip.indexOf(':'));
-        } catch (StringIndexOutOfBoundsException e) {
-            ip = "ERROR";
-            Bukkit.getLogger().log(Level.SEVERE, "Failed to Parse IP", e);
-        }
-        return ip;
-    }
-
-    @EventHandler
-    public void onLeave(PlayerQuitEvent event) {
-        //handle leaving events asynchronously, as to not lag server
-        handleLeaving(event.getPlayer().getUniqueId().toString(), true);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String commandLabel, String[] args) {
-        if (command.getName().equalsIgnoreCase("givevote") && args.length == 1) {
-            String playerInput = args[0];
-            OfflinePlayer p = CommonUtilities.getOfflinePlayerByString(playerInput);
-
-            logger.log(Level.INFO, "Vote given to {0}", p.getName());
-            PlayerConfigModel playerConfigModel= PlayerConfigModel.fromUUID(plugin,p.getUniqueId().toString());
-            if (p.isOnline()) {
-                giveVote((Player) p, playerConfigModel, 1);
-            }
-            else {
-                playerConfigModel.setVotesOwed(playerConfigModel.getVotesOwed() + 1);
-                playerConfigModel.saveConfig(plugin);
-            }
-
-            return true;
-        } else if (command.getName().equalsIgnoreCase("donor") && args.length == 1) {
-            //TODO: reimplement this
-            //I think this will be removed
-            return true;
-        } else if (command.getName().equalsIgnoreCase("forgegiven") && args.length == 1) {
-            //TODO: figure this out
-            //Unless I make a custom command config file- it's getting removed
-            //I don't think it's possible
-            return true;
-        } else if (command.getName().equalsIgnoreCase("wipeip") && args.length == 1) {
-            OfflinePlayer p = Bukkit.getOfflinePlayer(args[0]);
-            playerData.deleteIPsByUUID(p.getUniqueId().toString());
-            sender.sendMessage(ChatColor.GREEN + "IPs for " + p.getName() + " cleared from the alt detector db!");
-            return true;
-        }
-        return false;
-    }
-
-    private List<OfflinePlayer> getBannedAlts(String playerIP, String playerUUID) {
-        List<OfflinePlayer> banned = new ArrayList<>();
-        for (String uuid : playerData.getUUIDsByIP(playerIP)) {
-            if (uuid.equalsIgnoreCase(playerUUID))
-                continue;
-            OfflinePlayer p = getServer().getOfflinePlayer(UUID.fromString(uuid));
-            if (p.isBanned()) {
-                banned.add(p);
-            }
-        }
-        return banned;
-    }
-
-    public void broadcastOPs(String s) {
-        for (Player p : getServer().getOnlinePlayers()) {
-            if (p.isOp())
-                p.sendMessage(ChatColor.RED + s);
-        }
-    }
-
-    public void giveVote(Player p, PlayerConfigModel playerConfigModel, int num) {
-        voteHandler.giveVote(plugin,p,playerConfigModel,num);
-    }
-
-    private void registerCommand(String commandName, CommandExecutor executor) {
-        PluginCommand command = getCommand(commandName);
-        if (command != null) {
-            command.setExecutor(executor);
-            if (executor instanceof TabCompleter) {
-                command.setTabCompleter((TabCompleter) executor);
-            }
-        } else {
-            getLogger().log(Level.WARNING,"The \"{0}\" command was not found. Please check your plugin.yml file.", commandName);
-        }
-    }
-
-    public void checkLoseGroup(Player p, PlayerConfigModel playerConfigModel) {
-        long currentTime = System.currentTimeMillis();
-        Map<String, GroupInfo> groupInfoMap = playerConfigModel.getGroupInfos();
-        for(Map.Entry<String, GroupInfo> groupInfoEntry: groupInfoMap.entrySet()){
-            String groupInfoKey = groupInfoEntry.getKey();
-            GroupInfo groupInfo = groupInfoEntry.getValue();
-            if(groupInfo.isActive() && groupInfo.getExpiration() < currentTime){
-                groupInfo.setActive(false);
-                GroupModel groupModel = groups.getGroupModelByKey(groupInfoKey);
-                groups.loseGroup(p, groupModel);
-            }
-            groupInfoMap.put(groupInfoKey,groupInfo);
-        }
-        playerConfigModel.setGroupInfos(groupInfoMap);
-        playerConfigModel.saveConfig(plugin);
-    }
-
-    //TODO not great code but it gets the job done - Check if this works now
-    //had to add a synchronous way because asynchronous doesn't work when server is shutting down
-    public void handleLeaving(String uuid, boolean async) {
-        Player player = plugin.getServer().getPlayer(UUID.fromString(uuid));
-        if(player == null){
-            return;
-        }
-        Location loc = player.getLocation();
-        if (async) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    doLeavingTasks(uuid, loc);
-                }
-            }.runTaskAsynchronously(plugin);
-        } else {
-            doLeavingTasks(uuid, loc);
-        }
-    }
-
-    private void doLeavingTasks(String uuid, Location loc) {
-        PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, uuid);
-        long current = System.currentTimeMillis();
-        long lastLogin = playerConfigModel.getLastLogin();
-
-        playerConfigModel.setLastLogout(current);
-        long currentSessionLength = (current - lastLogin);
-        if (currentSessionLength < (1000 * 60 * 60 * 12)) {
-            playerConfigModel.setTotalPlaytime(playerConfigModel.getTotalPlaytime() + currentSessionLength);
-        }
-        //TODO: Investigate why I did LastLocation manually- Location object would be better
-        playerConfigModel.setLastLocationX(loc.getX());
-        playerConfigModel.setLastLocationY(loc.getY());
-        playerConfigModel.setLastLocationZ(loc.getZ());
-        World world = loc.getWorld();
-        if(world != null){
-            playerConfigModel.setLastLocationWorld(loc.getWorld().getName());
-        }
-
-        playerConfigModel.saveConfig(plugin);
+    public List<OfflinePlayer> getBannedAlts(String playerIP, String playerUUID) {
+        return playerData.getUUIDsByIP(playerIP).stream()
+                .filter(uuid -> !uuid.equalsIgnoreCase(playerUUID))
+                .map(uuid -> getServer().getOfflinePlayer(UUID.fromString(uuid)))
+                .filter(OfflinePlayer::isBanned)
+                .collect(Collectors.toList());
     }
 
     public PlayerData getPlayerData() {
@@ -348,6 +156,14 @@ public class VnllaUserManagement extends JavaPlugin implements Listener, IVnllaU
 
     public Groups getGroups() {
         return groups;
+    }
+
+    public ServerConfigModel getServerConfigModel() {
+        return serverConfigModel;
+    }
+
+    public VoteHandler getVoteHandler() {
+        return voteHandler;
     }
 
     @Override
