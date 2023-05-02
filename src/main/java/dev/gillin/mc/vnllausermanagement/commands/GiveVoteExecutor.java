@@ -19,23 +19,23 @@ public class GiveVoteExecutor implements CommandExecutor {
         this.plugin = plugin;
     }
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (command.getName().equalsIgnoreCase("givevote") && strings.length == 1) {
-            String playerInput = strings[0];
-            OfflinePlayer player = CommonUtilities.getOfflinePlayerByString(playerInput);
-
-            Bukkit.getLogger().log(Level.INFO, "Vote given to {0}", player.getName());
-            PlayerConfigModel playerConfigModel= PlayerConfigModel.fromUUID(plugin, player.getUniqueId().toString());
-            if (player.isOnline()) {
-                plugin.getVoteHandler().giveVote(plugin, (Player) player, playerConfigModel, 1);
-            }
-            else {
-                playerConfigModel.setVotesOwed(playerConfigModel.getVotesOwed() + 1);
-                playerConfigModel.saveConfig(plugin);
-            }
-
-            return true;
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        if (args.length != 1) {
+            return false;
         }
-        return false;
+
+        String playerInput = args[0];
+        OfflinePlayer player = CommonUtilities.getOfflinePlayerByString(playerInput);
+
+        Bukkit.getLogger().log(Level.INFO, "Vote given to {0}", player.getName());
+        PlayerConfigModel playerConfigModel= PlayerConfigModel.fromUUID(plugin, player.getUniqueId().toString());
+        if (player.isOnline()) {
+            plugin.getVoteHandler().giveVote(plugin, (Player) player, playerConfigModel, 1);
+        }
+        else {
+            playerConfigModel.setVotesOwed(playerConfigModel.getVotesOwed() + 1);
+            playerConfigModel.saveConfig(plugin);
+        }
+        return true;
     }
 }

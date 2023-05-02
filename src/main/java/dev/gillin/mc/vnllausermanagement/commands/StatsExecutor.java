@@ -27,22 +27,19 @@ public class StatsExecutor implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String[] args) {
-        if(command.getName().equalsIgnoreCase("stats")) {
-            if(sender instanceof Player) {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        showStatsMessage(sender);
-                    }
-                }.runTaskAsynchronously(plugin);
-            }
-            else {
-                sender.sendMessage(ChatColor.RED + "Ur not a player!");
-            }
-            return true;
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if(sender instanceof Player) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    showStatsMessage(sender);
+                }
+            }.runTaskAsynchronously(plugin);
         }
-        return false;
+        else {
+            sender.sendMessage(ChatColor.RED + "Ur not a player!");
+        }
+        return true;
     }
 
     private void showStatsMessage(@NotNull CommandSender sender) {
@@ -53,12 +50,12 @@ public class StatsExecutor implements CommandExecutor {
             return;
         }
         Scoreboard main=scoreboardManager.getMainScoreboard();
-        PlayerConfigModel playerConfigModel=PlayerConfigModel.fromUUID(plugin, p.getUniqueId().toString());
+        PlayerConfigModel playerConfigModel = PlayerConfigModel.fromUUID(plugin, p.getUniqueId().toString());
 
-        long time=0;
-        time+=System.currentTimeMillis()-playerConfigModel.getLastLogin();
+        long time = 0;
+        time += System.currentTimeMillis() - playerConfigModel.getLastLogin();
         //if player has been on before, add the total time recorded
-        time+=playerConfigModel.getTotalPlaytime();
+        time += playerConfigModel.getTotalPlaytime();
 
         sender.sendMessage(ChatColor.YELLOW + p.getName() + "'s Stats:");
         sender.sendMessage(ChatColor.YELLOW + "Total Votes: " + ChatColor.GREEN + playerConfigModel.getTotalVotes());
@@ -73,7 +70,6 @@ public class StatsExecutor implements CommandExecutor {
                 continue;
             }
             sender.sendMessage(ChatColor.YELLOW + objective.getDisplayName() + ": " + ChatColor.GREEN + objective.getScore(p.getName()).getScore());
-
         }
     }
 }

@@ -27,20 +27,16 @@ public class StatusExecutor implements CommandExecutor{
 	}
 
 	@Override
-	public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String commandLabel, String[] args) {
-		if(command.getName().equalsIgnoreCase("status")&&sender.hasPermission("VnllaPlayerInfo.seestatus")) {
-			if(args.length==1) {
-				new BukkitRunnable() {
-					@Override
-					public void run() {
-						printStatusMessage(args, sender);
-					}
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String commandLabel, @NotNull String[] args) {
+		if(sender.hasPermission("VnllaPlayerInfo.seestatus") && args.length==1) {
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					printStatusMessage(args, sender);
+				}
 
-				}.runTaskAsynchronously(plugin);
-				return true;
-			} else {
-				return false;
-			}
+			}.runTaskAsynchronously(plugin);
+			return true;
 		}
 		return false;
 	}

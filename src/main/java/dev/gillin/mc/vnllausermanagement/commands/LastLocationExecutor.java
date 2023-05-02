@@ -21,9 +21,9 @@ public class LastLocationExecutor implements CommandExecutor {
         this.plugin = plugin;
     }
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         // lastlocation <uuid>
-        if (command.getName().equalsIgnoreCase("lastlocation") && args.length == 1) {
+        if (args.length == 1) {
             String uuid = args[0];
             if(!CommonUtilities.isValidUUID(uuid) ){
                 plugin.getLogger().log(Level.SEVERE, "Invalid UUID entered by player");

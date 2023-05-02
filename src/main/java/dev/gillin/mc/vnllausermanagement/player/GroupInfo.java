@@ -10,7 +10,7 @@ public class GroupInfo {
         this.groupName = groupName;
         this.active = false;
         this.currentVotes = 0;
-        this.expiration = 0l;
+        this.expiration = 0L;
     }
 
     public GroupInfo(String groupName, boolean active, int currentVotes, long expiration) {
