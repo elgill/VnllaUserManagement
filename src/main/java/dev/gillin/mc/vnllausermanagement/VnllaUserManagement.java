@@ -5,7 +5,6 @@ import dev.gillin.mc.vnllausermanagement.database.PlayerData;
 import dev.gillin.mc.vnllausermanagement.database.SQLiteConnection;
 import dev.gillin.mc.vnllausermanagement.datamodels.ServerConfigModel;
 import dev.gillin.mc.vnllausermanagement.events.PluginEventListener;
-import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
 import dev.gillin.mc.vnllausermanagement.groups.Groups;
 import dev.gillin.mc.vnllausermanagement.handlers.CommandHandler;
 import dev.gillin.mc.vnllausermanagement.handlers.LuckPermsHandler;
@@ -19,23 +18,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.group.Group;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.PermissionNode;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -186,7 +177,6 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
         return luckPermsHandler;
     }
 
-    @Override
     public void createPlayerDataDirectory() {
         this.saveDefaultConfig();
         File playerDataFile = new File(this.getDataFolder() + File.separator + "playerdata");

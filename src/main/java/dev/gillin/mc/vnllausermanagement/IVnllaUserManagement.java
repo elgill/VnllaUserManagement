@@ -7,8 +7,4 @@ import java.io.File;
 
 public interface IVnllaUserManagement extends Plugin {
     @NotNull File getDataFolder();
-
-    void createPlayerDataDirectory();
-
-
 }

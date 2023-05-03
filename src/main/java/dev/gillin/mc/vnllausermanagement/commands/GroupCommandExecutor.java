@@ -65,32 +65,31 @@ public class GroupCommandExecutor implements TabExecutor {
             return false;
         }
         if (addOrRemove.equalsIgnoreCase("add")){
-            return handleAddGroup(player, playerConfigModel, groupModel);
+            handleAddGroup(player, playerConfigModel, groupModel);
         } else if (addOrRemove.equalsIgnoreCase("remove")) {
-            return handleLoseGroup(player, playerConfigModel, groupModel);
+            handleLoseGroup(player, playerConfigModel, groupModel);
+        } else {
+            return false;
         }
-        return false;
+        return true;
     }
 
-    private boolean handleLoseGroup(OfflinePlayer player, PlayerConfigModel playerConfigModel, GroupModel groupModel) {
+    private void handleLoseGroup(OfflinePlayer player, PlayerConfigModel playerConfigModel, GroupModel groupModel) {
         if(player.isOnline()){
             plugin.getGroups().loseGroup(player.getPlayer(), groupModel);
         } else {
             playerConfigModel.getPendingLostGroups().add(groupModel.getGroupKey());
             playerConfigModel.saveConfig(plugin);
         }
-
-        return true;
     }
 
-    private boolean handleAddGroup(OfflinePlayer player, PlayerConfigModel playerConfigModel, GroupModel groupModel) {
+    private void handleAddGroup(OfflinePlayer player, PlayerConfigModel playerConfigModel, GroupModel groupModel) {
         if(player.isOnline()){
             plugin.getGroups().earnGroup(player.getPlayer(), groupModel);
         } else {
             playerConfigModel.getPendingEarnedGroups().add(groupModel.getGroupKey());
             playerConfigModel.saveConfig(plugin);
         }
-        return true;
     }
 
 }
