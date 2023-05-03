@@ -18,8 +18,7 @@ groups:
          - say %PLAYER% earned vip
       loseRankCommands:
          - say %PLAYER% lost vip
-      permissions:
-         - some.permission.vip1
+      luckPermGroupName: "some.group.vip"
       voteAchievable: true
    vip2:
       displayName: "VIP2"
@@ -29,8 +28,7 @@ groups:
          - say %PLAYER% earned vip2
       loseRankCommands:
          - say %PLAYER% lost vip2
-      permissions:
-         - some.permission.vip2
+      luckPermGroupName: "some.group.vip2"
       voteAchievable: true
    donor:
       displayName: "Donor"
@@ -41,8 +39,7 @@ groups:
          - say %PLAYER% given donor2!
       loseRankCommands:
          - say %PLAYER% lose donor :/
-      permissions:
-         - some.permission.donor
+      luckPermGroupName: "some.group.donor"
       voteAchievable: false
    mod:
       displayName: "Moderator"
@@ -52,8 +49,7 @@ groups:
          - say %PLAYER% given mod
       loseRankCommands:
          - say %PLAYER% lost mod
-      permissions:
-         - some.permission.mod
+      luckPermGroupName: "some.group.mod"
       voteAchievable: false
    admin:
       displayName: "Admin"
@@ -63,8 +59,7 @@ groups:
          - say %PLAYER% given admin
       loseRankCommands:
          - say %PLAYER% lost admin
-      permissions:
-         - some.permission.admin
+      luckPermGroupName: "some.group.admin"
       voteAchievable: false
    owner:
       displayName: "Owner"
@@ -74,6 +69,5 @@ groups:
          - say %PLAYER% given owner
       loseRankCommands:
          - say %PLAYER% lose owner
-      permissions:
-         - some.permission.owner
+      luckPermGroupName: "some.group.owner"
       voteAchievable: false

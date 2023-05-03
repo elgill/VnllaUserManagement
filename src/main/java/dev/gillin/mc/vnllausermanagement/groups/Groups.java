@@ -11,10 +11,12 @@ import java.util.logging.Level;
 public class Groups{
 	private final List<GroupModel> groupModels;
 	private final List<GroupModel> voteGroupModels;
+	private final VnllaUserManagement plugin;
 
-	public Groups(VnllaUserManagement p) {
+	public Groups(VnllaUserManagement plugin) {
+		this.plugin = plugin;
 		Bukkit.getLogger().log(Level.INFO,"Parsing GroupModels... ");
-		groupModels = GroupSerializer.deserializeGroups(p.getConfig().getConfigurationSection("groups"));
+		groupModels = GroupSerializer.deserializeGroups(plugin.getConfig().getConfigurationSection("groups"));
 		voteGroupModels= new ArrayList<>();
 		for(GroupModel groupModel: groupModels){
 			if(groupModel.isVoteAchievable()){
@@ -44,15 +46,18 @@ public class Groups{
 	}
 
 	public void earnGroup(Player p, GroupModel groupModel){
-		//TODO: Grant perms
+		plugin.getLuckPermsHandler().addGroupToPlayer(p, groupModel.getLuckPermsGroupName());
+
 		List<String> earnRankCommands = groupModel.getEarnRankCommands();
 		for(String cmd: earnRankCommands){
+
 			cmd = cmd.replace("%PLAYER%", p.getName());
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
 		}
 	}
 	public void loseGroup(Player p, GroupModel groupModel){
-		//TODO: Revoke perms
+		plugin.getLuckPermsHandler().removeGroupFromPlayer(p,groupModel.getLuckPermsGroupName());
+
 		List<String> loseRankCommands = groupModel.getLoseRankCommands();
 		for(String cmd: loseRankCommands){
 			cmd = cmd.replace("%PLAYER%", p.getName());

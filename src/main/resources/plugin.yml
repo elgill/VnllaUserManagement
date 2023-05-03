@@ -3,6 +3,7 @@ version: '${project.version}'
 author: Chris Gillin
 main: dev.gillin.mc.vnllausermanagement.VnllaUserManagement
 api-version: 1.19
+softdepend: [LuckPerms]
 
 
 commands:

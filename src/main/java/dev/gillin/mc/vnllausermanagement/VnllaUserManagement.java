@@ -5,8 +5,10 @@ import dev.gillin.mc.vnllausermanagement.database.PlayerData;
 import dev.gillin.mc.vnllausermanagement.database.SQLiteConnection;
 import dev.gillin.mc.vnllausermanagement.datamodels.ServerConfigModel;
 import dev.gillin.mc.vnllausermanagement.events.PluginEventListener;
+import dev.gillin.mc.vnllausermanagement.groups.GroupModel;
 import dev.gillin.mc.vnllausermanagement.groups.Groups;
 import dev.gillin.mc.vnllausermanagement.handlers.CommandHandler;
+import dev.gillin.mc.vnllausermanagement.handlers.LuckPermsHandler;
 import dev.gillin.mc.vnllausermanagement.handlers.VoteHandler;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -17,14 +19,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.group.Group;
+import net.luckperms.api.node.NodeType;
+import net.luckperms.api.node.types.PermissionNode;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -36,7 +47,7 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
     private SQLiteConnection connection;
     private PlayerData playerData;
     private PluginEventListener pluginEventListener;
-
+    private LuckPermsHandler luckPermsHandler;
     public VnllaUserManagement() {
     }
 
@@ -52,7 +63,12 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
         serverConfigModel = ServerConfigModel.fromConfigFile(getConfig());
         groups = new Groups(this);
 
-        getServer().getPluginManager().registerEvents(pluginEventListener, this);
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        luckPermsHandler = new LuckPermsHandler(this);
+        luckPermsHandler.loadLuckPermsIfPresent(pluginManager);
+
+        pluginManager.registerEvents(pluginEventListener, this);
 
         Bukkit.getLogger().log(Level.INFO, "Parsed server config: {0}", serverConfigModel);
 
@@ -164,6 +180,10 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
 
     public VoteHandler getVoteHandler() {
         return voteHandler;
+    }
+
+    public LuckPermsHandler getLuckPermsHandler() {
+        return luckPermsHandler;
     }
 
     @Override

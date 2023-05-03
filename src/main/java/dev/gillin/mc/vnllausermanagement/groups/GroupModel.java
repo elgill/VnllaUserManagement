@@ -10,7 +10,7 @@ public class GroupModel {
     private List<String> earnRankCommands;
     private List<String> loseRankCommands;
     private boolean voteAchievable;
-    private List<String> permissions;
+    private String luckPermsGroupName;
 
     public GroupModel(String groupKey){
         this.groupKey = groupKey;
@@ -24,8 +24,8 @@ public class GroupModel {
         this.groupKey = groupKey;
     }
 
-    public void setPermissions(List<String> permissions) {
-        this.permissions = permissions;
+    public void setLuckPermsGroupName(String luckPermsGroupName) {
+        this.luckPermsGroupName = luckPermsGroupName;
     }
 
     public String getDisplayName() {
@@ -76,10 +76,9 @@ public class GroupModel {
         this.voteAchievable = voteAchievable;
     }
 
-    public List<String> getPermissions() {
-        return permissions;
+    public String getLuckPermsGroupName() {
+        return luckPermsGroupName;
     }
-
 
     @Override
     public String toString() {
@@ -91,7 +90,7 @@ public class GroupModel {
                 ", earnRankCommands=" + earnRankCommands +
                 ", loseRankCommands=" + loseRankCommands +
                 ", voteAchievable=" + voteAchievable +
-                ", permissions=" + permissions +
+                ", luckPermsGroupName='" + luckPermsGroupName + '\'' +
                 '}';
     }
 }
