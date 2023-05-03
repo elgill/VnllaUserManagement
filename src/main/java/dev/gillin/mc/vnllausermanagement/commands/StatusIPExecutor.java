@@ -27,25 +27,29 @@ public class StatusIPExecutor implements CommandExecutor {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    sender.sendMessage(ChatColor.LIGHT_PURPLE+"IP: "+ChatColor.WHITE+args[0]);
-                    ArrayList<String> ign=new ArrayList<>();
-                    for(String s:plugin.getPlayerData().getUUIDsByIP(args[0])) {
-                        ign.add(Bukkit.getOfflinePlayer(UUID.fromString(s)).getName());
-                    }
-                    sender.sendMessage(ChatColor.LIGHT_PURPLE+"Accounts: "+ChatColor.WHITE+ ign);
-                    BanList list=plugin.getServer().getBanList(BanList.Type.IP);
-                    if(list.isBanned(args[0])){
-                        BanEntry ban=list.getBanEntry(args[0]);
-                        if (ban != null) {
-                            sender.sendMessage(ChatColor.RED+"Banned: "+ChatColor.RESET+ ban.getCreated());
-                            sender.sendMessage(ChatColor.RED+"Banned by: "+ChatColor.RESET+ban.getSource());
-                            sender.sendMessage(ChatColor.RED+"Reason: "+ChatColor.RESET+ban.getReason());
-                        }
-                    }
+                    sendStatusIpMessage(sender, args);
                 }
             }.runTaskAsynchronously(plugin);
             return true;
         }
         return false;
+    }
+
+    private void sendStatusIpMessage(@NotNull CommandSender sender, @NotNull String @NotNull [] args) {
+        sender.sendMessage(ChatColor.LIGHT_PURPLE+"IP: "+ChatColor.WHITE+ args[0]);
+        ArrayList<String> ign=new ArrayList<>();
+        for(String s:plugin.getPlayerData().getUUIDsByIP(args[0])) {
+            ign.add(Bukkit.getOfflinePlayer(UUID.fromString(s)).getName());
+        }
+        sender.sendMessage(ChatColor.LIGHT_PURPLE+"Accounts: "+ChatColor.WHITE+ ign);
+        BanList list=plugin.getServer().getBanList(BanList.Type.IP);
+        if(list.isBanned(args[0])){
+            BanEntry ban=list.getBanEntry(args[0]);
+            if (ban != null) {
+                sender.sendMessage(ChatColor.RED+"Banned: "+ChatColor.RESET+ ban.getCreated());
+                sender.sendMessage(ChatColor.RED+"Banned by: "+ChatColor.RESET+ban.getSource());
+                sender.sendMessage(ChatColor.RED+"Reason: "+ChatColor.RESET+ban.getReason());
+            }
+        }
     }
 }
