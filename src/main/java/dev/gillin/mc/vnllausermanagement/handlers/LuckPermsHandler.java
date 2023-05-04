@@ -56,6 +56,9 @@ public class LuckPermsHandler {
     }
 
     public void addGroupToPlayer(Player player, String groupName) {
+        if(luckPerms == null){
+            return;
+        }
         UserManager userManager = luckPerms.getUserManager();
 
         // Load the user using their UUID
@@ -79,6 +82,10 @@ public class LuckPermsHandler {
         userManager.saveUser(user);
     }
     public void removeGroupFromPlayer(Player player, String groupName) {
+        if(luckPerms == null){
+            return;
+        }
+
         UserManager userManager = luckPerms.getUserManager();
 
         // Load the user using their UUID
