@@ -7,6 +7,7 @@ import dev.gillin.mc.vnllausermanagement.datamodels.ServerConfigModel;
 import dev.gillin.mc.vnllausermanagement.events.PluginEventListener;
 import dev.gillin.mc.vnllausermanagement.groups.Groups;
 import dev.gillin.mc.vnllausermanagement.handlers.CommandHandler;
+import dev.gillin.mc.vnllausermanagement.handlers.LuckPermsHandler;
 import dev.gillin.mc.vnllausermanagement.handlers.VoteHandler;
 import dev.gillin.mc.vnllausermanagement.player.PlayerConfigModel;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -18,6 +19,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
@@ -36,7 +38,7 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
     private SQLiteConnection connection;
     private PlayerData playerData;
     private PluginEventListener pluginEventListener;
-
+    private LuckPermsHandler luckPermsHandler;
     public VnllaUserManagement() {
     }
 
@@ -52,7 +54,12 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
         serverConfigModel = ServerConfigModel.fromConfigFile(getConfig());
         groups = new Groups(this);
 
-        getServer().getPluginManager().registerEvents(pluginEventListener, this);
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        luckPermsHandler = new LuckPermsHandler(this);
+        luckPermsHandler.loadLuckPermsIfPresent(pluginManager);
+
+        pluginManager.registerEvents(pluginEventListener, this);
 
         Bukkit.getLogger().log(Level.INFO, "Parsed server config: {0}", serverConfigModel);
 
@@ -166,7 +173,10 @@ public class VnllaUserManagement extends JavaPlugin implements IVnllaUserManagem
         return voteHandler;
     }
 
-    @Override
+    public LuckPermsHandler getLuckPermsHandler() {
+        return luckPermsHandler;
+    }
+
     public void createPlayerDataDirectory() {
         this.saveDefaultConfig();
         File playerDataFile = new File(this.getDataFolder() + File.separator + "playerdata");

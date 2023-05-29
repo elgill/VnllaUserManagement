@@ -20,7 +20,7 @@ public class GroupSerializer {
             long rankLength = groupsSection.getLong(key + ".rankLength");
             List<String> earnRankCommands = groupsSection.getStringList(key + ".earnRankCommands");
             List<String> loseRankCommands = groupsSection.getStringList(key + ".loseRankCommands");
-            List<String> permissions = groupsSection.getStringList(key + ".permissions");
+            String luckPermGroupName = groupsSection.getString(key + ".luckPermGroupName");
             boolean voteAchievable = groupsSection.getBoolean(key + ".voteAchievable", true); // Default to true
 
             GroupModel groupModel = new GroupModel(key);
@@ -30,7 +30,7 @@ public class GroupSerializer {
             groupModel.setEarnRankCommands(earnRankCommands);
             groupModel.setLoseRankCommands(loseRankCommands);
             groupModel.setVoteAchievable(voteAchievable);
-            groupModel.setPermissions(permissions);
+            groupModel.setLuckPermsGroupName(luckPermGroupName);
 
             groups.add(groupModel);
         }

@@ -22,7 +22,7 @@ public class GroupCommandExecutor implements TabExecutor {
         this.plugin = plugin;
     }
 
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         List<String> completions = new ArrayList<>();
         List<String> possibles = new ArrayList<>();
         if (args.length == 1) {
@@ -48,15 +48,10 @@ public class GroupCommandExecutor implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String alias, String[] args) {
-        if(command.getName().equalsIgnoreCase("group")) {
-            // /group ExamplePlayer add mod
-            if(args.length==3) {
-                return handleGroupCommand(args);
-            } else {
-                //Currently only support three arguments
-                return false;
-            }
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
+        // /group ExamplePlayer add mod
+        if(args.length==3) {
+            return handleGroupCommand(args);
         }
         return false;
     }
@@ -70,30 +65,31 @@ public class GroupCommandExecutor implements TabExecutor {
             return false;
         }
         if (addOrRemove.equalsIgnoreCase("add")){
-            return handleAddGroup(player, playerConfigModel, groupModel);
+            handleAddGroup(player, playerConfigModel, groupModel);
         } else if (addOrRemove.equalsIgnoreCase("remove")) {
-            return handleLoseGroup(player, playerConfigModel, groupModel);
+            handleLoseGroup(player, playerConfigModel, groupModel);
+        } else {
+            return false;
         }
-        return false;
+        return true;
     }
 
-    private boolean handleLoseGroup(OfflinePlayer player, PlayerConfigModel playerConfigModel, GroupModel groupModel) {
+    private void handleLoseGroup(OfflinePlayer player, PlayerConfigModel playerConfigModel, GroupModel groupModel) {
         if(player.isOnline()){
             plugin.getGroups().loseGroup(player.getPlayer(), groupModel);
         } else {
             playerConfigModel.getPendingLostGroups().add(groupModel.getGroupKey());
+            playerConfigModel.saveConfig(plugin);
         }
-
-        return true;
     }
 
-    private boolean handleAddGroup(OfflinePlayer player, PlayerConfigModel playerConfigModel, GroupModel groupModel) {
+    private void handleAddGroup(OfflinePlayer player, PlayerConfigModel playerConfigModel, GroupModel groupModel) {
         if(player.isOnline()){
             plugin.getGroups().earnGroup(player.getPlayer(), groupModel);
         } else {
             playerConfigModel.getPendingEarnedGroups().add(groupModel.getGroupKey());
+            playerConfigModel.saveConfig(plugin);
         }
-        return true;
     }
 
 }

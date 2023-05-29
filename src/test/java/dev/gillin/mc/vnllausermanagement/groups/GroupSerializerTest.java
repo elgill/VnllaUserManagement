@@ -35,8 +35,8 @@ class GroupSerializerTest {
         assertTrue(vip1EarnRankCmds.contains("lp user %player% parent addtemp vip %time%"));
         List<String> vip1LoseRankCmds = vip1.getLoseRankCommands();
         assertTrue(vip1LoseRankCmds.contains("lp user %player% parent removetemp vip"));
-        List<String> vips1Permissions = vip1.getPermissions();
-        assertTrue(vips1Permissions.contains("some.permission.vip"));
+        String vip1LuckPermsGroupName = vip1.getLuckPermsGroupName();
+        assertTrue(vip1LuckPermsGroupName.contains("some.group.vip"));
         assertTrue(vip1.isVoteAchievable());
 
         assertNotNull(vip2);
@@ -46,8 +46,8 @@ class GroupSerializerTest {
         assertTrue(vip2EarnRankCmds.isEmpty());
         List<String> vip2LoseRankCmds = vip2.getLoseRankCommands();
         assertTrue(vip2LoseRankCmds.isEmpty());
-        List<String> vip2Permissions = vip2.getPermissions();
-        assertTrue(vip2Permissions.contains("some.permission.vip2"));
+        String vip2LuckPermsGroupName = vip2.getLuckPermsGroupName();
+        assertTrue(vip2LuckPermsGroupName.contains("some.group.vip2"));
         assertTrue(vip2.isVoteAchievable());
 
         assertNotNull(donor);
@@ -57,8 +57,8 @@ class GroupSerializerTest {
         assertTrue(donorEarnRankCmds.contains("lp user %player% parent addtemp donor %time%"));
         List<String> donorLoseRankCmds = donor.getLoseRankCommands();
         assertTrue(donorLoseRankCmds.contains("lp user %player% parent removetemp donor"));
-        List<String> donorPermissions = donor.getPermissions();
-        assertTrue(donorPermissions.contains("some.permission.donor"));
+        String donorLuckPermsGroupName = donor.getLuckPermsGroupName();
+        assertTrue(donorLuckPermsGroupName.equalsIgnoreCase("some.group.donor"));
         assertFalse(donor.isVoteAchievable());
     }
 }
